@@ -1,4 +1,4 @@
-import { createApp } from 'vue';
+import { computed, createApp } from 'vue';
 import './bootstrap'
 import { createRouter, createWebHistory } from 'vue-router'
 import { routes } from './router/routes';
@@ -13,5 +13,6 @@ const router = createRouter({
     history: createWebHistory(),
     routes,
 });
+
 
 createApp(App).use(store).use(router).use(VueSweetalert2).mount('#app')

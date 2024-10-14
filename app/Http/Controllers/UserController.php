@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use Auth;
 use Illuminate\Http\Request;
 
 class UserController extends Controller
@@ -12,7 +13,7 @@ class UserController extends Controller
          $user = $request->user();
 
          // Check if the user has the 'admin' role
-         if ($user->hasRole('admin')) {
+         if ($user) {
              // Fetch all roles (or just user roles as needed)
              $roles = $user->roles;
              $allusers = User::all()->load('roles');
@@ -21,7 +22,7 @@ class UserController extends Controller
              return response()->json([
                  'success' => true,
                  'roles' => $roles,
-                 'userlist' => $allusers
+                 'userlist' => $allusers,
              ]);
          }
 

@@ -17,11 +17,11 @@ class AuthenticatedSessionController extends Controller
      */
     public function login(Request $request){
         $request->validate([
-            'email' => 'required|email',
-            'password' => 'required|string|min:6',
+           'email' => ['required','email'],
+            'password' => ['required'],
         ]);
         $data=User::where('email',$request->email)->first();
-        
+
         if (!$data) {
             return response()->json([
                 'message' => 'Invalid email or password',
