@@ -15,7 +15,8 @@ export default {
                 name: '',
                 email: '',
                 password: ''
-              }
+              },
+              roles : null
 
         };
     },
@@ -25,10 +26,11 @@ export default {
     methods: {
         async fetchData() {
             try {
-                const response = await api.get("api/users");
+                const response = await api.get("api/admin");
                 this.$store.dispatch("getUserData", response.data);
-                this.userlists = this.storeUserData.userlist;
-                this.currentRole = this.storeUserData.roles[0].name;
+                this.userlists = this.storeUserData;
+
+                this.currentRole = this.storeUserData.roles;
             } catch (error) {
                 console.error(error);
             }
@@ -36,162 +38,30 @@ export default {
 
         //role change
 
-        roleChange(userID){
-            this.$swal({
-                title: "Select role",
-                input: "select",
-                inputOptions: {
-                    'admin' : 'Admin',
-                    'editor' : "Editor",
-                    'user' : 'User',
-                },
-                inputPlaceholder: "Select a role",
-                showCancelButton: true,
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    const selectedRole = result.value;
-                    api.post('/api/user/rolechange',{
-                        'id' : userID,
-                        'role' : selectedRole
-                    }).then(response => {
-                        location.reload();
-                        console.log(response);
-
-                    })
-                }
-            });
-        },
-
         createData() {
-            this.$swal({
-                title: 'Enter your details',
-                html: `
-                <input type="text" id="swal-input-name" class=" rounded-md swal2-input" placeholder="Name">
-                <input type="email" id="swal-input-email" class=" rounded-md swal2-input" placeholder="Email">
-                <input type="password" id="swal-input-password" class=" rounded-md swal2-input" placeholder="Password">
-              `,
-              focusConfirm: false,
-              showCancelButton: true,
-              confirmButtonText: 'Submit',
-              preConfirm: () => {
-                const name = document.getElementById('swal-input-name').value;
-                const email = document.getElementById('swal-input-email').value;
-                const password = document.getElementById('swal-input-password').value;
-
-                if (!name || !email || !password) {
-                  Swal.showValidationMessage('Please fill out all fields');
-                  return;
-                }
-
-                return { name, email, password };
-              }
-            }).then((result) => {
-                if (result.isConfirmed) {
-                  // Bind the input data to the Vue component's data
-                  this.formData.name = result.value.name;
-                  this.formData.email = result.value.email;
-                  this.formData.password = result.value.password;
-                }
-                   try {
-            //    if(showCancelButton){
-                api.post('/api/user/create',this.formData).then(response =>{
-                    console.log(response);
-
-                    this.$store.dispatch("getUserData", response.data);
-                    location.reload();
-                        return;
-                  })
-            //    }
-
-           } catch (error) {
-            console.log(error);
-
-           }
-              });
-
-
-
-
+            this.$router.push('/user/create');
 
         },
-        userEdit(userID,userName,userEmail){
-
-
-            this.formData = {
-                'id' :userID,
-                'name' :  userName,
-                'email' :  userEmail
+        userEdit(userID){
+            this.$router.push(`/admin/account/edit/${userID}`)
+        },
+       async  userDelete (userID){
+            const originalUserList = [...this.userlists]
+            this.userlists = this.userlists.filter(user => user.id !== userID);
+            try {
+                // Send a DELETE request to the server
+                await api.delete(`/api/admin/${userID}`);
+            } catch (error) {
+                // If the server request fails, restore the original user list
+                this.userlists = originalUserList;
+                console.error("Error deleting user from the server:", error);
             }
-
-            this.$swal({
-                title: 'Update your details',
-                html: `
-          <input type="text" id="swal-input-name" class="swal2-input" placeholder="Name" value='${this.formData.name}'>
-          <input type="email" id="swal-input-email" class="swal2-input" placeholder="Email" value="${this.formData.email}">
-          <input type="password" id="swal-input-password" class="swal2-input" placeholder="Password" value="${this.formData.password}">
-        `,
-        focusConfirm: false,
-        showCancelButton: true,
-        confirmButtonText: 'Update',
-        preConfirm: () => {
-          const name = document.getElementById('swal-input-name').value;
-          const email = document.getElementById('swal-input-email').value;
-          const password = document.getElementById('swal-input-password').value;
-
-          if (!name || !email || !password) {
-            Swal.showValidationMessage('Please fill out all fields');
-            return;
-          }
-
-          return { name, email, password };
-        }
-            }).then((result) => {
-                if (result.isConfirmed) {
-                  // Bind the input data to the Vue component's data
-                  this.formData.name = result.value.name;
-                  this.formData.email = result.value.email;
-                  this.formData.password = result.value.password;
-                }
-                   try {
-            //    if(!showCancelButton){
-                api.post('/api/user/update',this.formData).then(response =>{
-                    this.$store.dispatch("getUserData", response.data);
-                    location.reload();
-                        return;
-                  })
-            //    }
-
-           } catch (error) {
-            console.log(error);
-
-           }
-              });
-
-        },
-        userDelete (userID){
-            console.log(userID);
-
-
-                this.$swal({
-                    title: 'Are you sure?',
-                    text: 'Do you really want to delete this user? This action cannot be undone.',
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonText: 'Yes, delete it!',
-                    cancelButtonText: 'Cancel',
-                    reverseButtons: true
-                }).then((result)=>{
-                        if(result.isConfirmed){
-                          api.delete(`/api/user/delete/${userID}`)
-                          location.reload();
-                        }
-                })
         },
 
     },
 
-    mounted() {
-        this.fetchData();
+   async mounted() {
+        await this.fetchData();
         if (localStorage.getItem("token") != null) {
             this.loginStatus = true;
         } else {

@@ -51,12 +51,20 @@
             </a>
 
             <a
+           @click="rolePage"
                 class="flex items-center px-6 py-2 mt-4 text-gray-500 hover:bg-gray-700 hover:bg-opacity-25 hover:text-gray-100"
-                href="/tables"
             >
             <i class="fa-solid fa-shield-halved"></i>
 
                 <span class="mx-3">Roles</span>
+            </a>
+            <a
+           @click="rolePage"
+                class="flex items-center px-6 py-2 mt-4 text-gray-500 hover:bg-gray-700 hover:bg-opacity-25 hover:text-gray-100"
+            >
+            <i class="fa-solid fa-lock"></i>
+
+                <span class="mx-3">Permissions</span>
             </a>
 
             <button
@@ -85,6 +93,11 @@ export default {
         },
         userList(){
             this.$router.push('/admin/home')
+        },
+        rolePage(){
+            this.$router.push('/admin/role')
+            console.log('hello I will send you to there');
+
         }
 
     },

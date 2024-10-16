@@ -123,18 +123,19 @@ export default {
                         this.loginStatus = true;
                         this.$store.dispatch("login", token);
                         this.$store.dispatch("getUserData", userData);
-                        let roles = this.storeUserData.roles;
-                        roles.forEach((role) => {
-                            if(role.name === 'admin'){
+                        let role = this.storeUserData.roles[0]?.name;
+                            if(role === 'admin'){
                                 this.$router.push('/admin/home')
+                            }else if(
+                                role === 'user'
+                            ){
+                                   this.$router.push('/user/home')
+
+                            }else if (role === 'editor') {
+                                    this.$router.push('/editor/home')
+
                             }
-                            if(role.name === 'editor'){
-                                this.$router.push('/editor/home')
-                            }
-                            if(role.name === 'user'){
-                                this.$router.push('/user/home')
-                            }
-                        });
+
 
                     }
                 })

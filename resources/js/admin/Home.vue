@@ -67,7 +67,6 @@
                                 <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Email</th>
                                 <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Role</th>
                                 <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"></th>
-                                <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Status</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -86,17 +85,12 @@
                                     <p class="text-gray-900 whitespace-no-wrap">{{ userlist.email }}</p>
                                 </td>
                                 <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                                    <p class="text-gray-900 whitespace-no-wrap">{{ userlist.roles[0].name }}</p>
+                                    <p class="text-gray-900 whitespace-no-wrap">{{ userlist.roles && userlist.roles.length > 0 ? userlist.roles[0].name : 'No role assigned' }}</p>
                                 </td>
                                 <td class="px-5 space-x-4 py-5 border-b border-gray-200 bg-white text-sm">
-                                    <button @click="userEdit(userlist.id,userlist.name,userlist.email)"><i class="fa-regular fa-pen-to-square hover:text-green-500 "></i></button>
-                                    <button v-if="userlist.roles[0].name != 'admin' " @click="userDelete(userlist.id)"><i class="fa-solid fa-trash  hover:text-red-500"></i></button>
+                                    <button @click="userEdit(userlist.id)"><i class="fa-regular fa-pen-to-square hover:text-green-500 "></i></button>
+                                    <button @click="userDelete(userlist.id)"><i class="fa-solid fa-trash  hover:text-red-500"></i></button>
                                     <!-- <h4>{{ currentRole }}</h4> -->
-                                </td>
-
-                                <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                                        <span v-if="userlist.roles[0].name != 'user' " class="relative"><i class="fa-solid fa-lock"></i></span>
-                                        <button @click="roleChange(userlist.id)" type="button" class="text-indigo-600" v-if="userlist.roles[0].name != 'admin' "><i class="fa-solid fa-user-check"></i></button>
                                 </td>
                             </tr>
 
@@ -120,6 +114,5 @@
         </div>
 </template>
 
-<script src="./index.js">
+<script src="./index.js"></script>
 
-</script>

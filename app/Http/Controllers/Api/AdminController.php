@@ -2,71 +2,92 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Models\User;
 use Illuminate\Http\Request;
+use App\Interfaces\AdminInterface;
+use Spatie\Permission\Models\Role;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Hash;
 
 class AdminController extends Controller
 {
-    public function UserCreate(Request $request){
+    public function __construct(private AdminInterface $adminInterface )
+    {
 
-        $this->validationCheck($request);
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->string('password')),
-        ]);
-        $user->assignRole('user');
+    }
+    public function index()
+    {
+        $admins=$this->adminInterface->all();
+        $admins->load('roles');
+        if($admins){
+            return response()->json($admins);
+        }else{
+            return response()->json(["message"=> "no admin data"],404);
+        }
+    }
 
+    /**
+     * Show the form for creating a new resource.
+     */
+    public function create()
+    {
+        //
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(Request $request)
+    {
+       $data = $this->adminInterface->store($request);
+       return response()->json([
+        "message"=> "Create successfully",
+        $data
+       ],200);
+    }
+
+    /**
+     * Display the specified resource.
+     */
+    public function show(string $id)
+    {
+        //
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit(string $id)
+    {
+       $user = $this->adminInterface->edit($id);
+       $roles = $user->getRoleNames();
+       $permissions = $user->getAllPermissions();
+       return response()->json([
+        "message"=> "edit data",
+        $user,
+        $roles,
+        $permissions
+       ]);
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(Request $request, string $id)
+    {
+        $data = $this->adminInterface->update( $request,$id);
         return response()->json([
-            'user'=>$user->load('roles'),
-    ],200);
-    }
-    public function UserUpdate(Request $request){
-            $this->validationCheck($request);
-            $id = $request->id;
-            $user = User::where('id',$request->id)->first();
-            $user->update([
-                'name'=> $request->name,
-                'email'=> $request->email,
-                'password'=> Hash::make( $request->password),
-            ]);
-
-            // $user->update();
-            $user->assignRole('user');
-            return response()->json([
-                'user'=>$user->load('roles'),
-                'status' => 'success',
-        ],200);
-    }
-    public function UserDelete($id){
-        $user = User::where('id',$id)->first();
-        $user->delete();
-        return response()->json([
-            'user'=>$user,
-            'status'=> 'delete success',
-        ]);
-    }
-    public function userRoleChange(Request $request){
-        $user= User::where('id',$request->id)->first();
-        $user->update([
-            'name'=> $user->name,
-            'email'=> $user->email,
-            'password'=> Hash::make( $user->password),
-        ]);
-        $user->assignRole($request->role);
-        return response()->json([
-            'user'=>$user,
-            'status'=> 'Role change success',
-        ]);
+            'message' => 'User updated successfully',
+            'data' => $data
+        ], 200);
     }
 
-    protected function validationCheck($request){
-        return $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
-            'password' => ['required'],
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(string $id)
+    {
+       $this->adminInterface->destroy($id);
+        return response()->json([
+            'message'=> 'Deleted'
         ]);
     }
 }

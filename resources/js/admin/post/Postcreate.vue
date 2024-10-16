@@ -17,9 +17,20 @@
     <div>
     <form  @submit.prevent="handleSubmit">
     <div class="gap-6 mb-5 space-y-3">
+        <!-- <div id="alert-border-2" class="flex items-center p-4 mb-4 text-red-800 border-t-4 border-red-300 bg-red-50 dark:text-red-400 dark:bg-gray-800 dark:border-red-800" role="alert">
+    <div class="ms-3 text-sm font-medium">
+      A simple danger alert with an <a href="#" class="font-semibold underline hover:no-underline">example link</a>. Give it a click if you like.
+    </div>
+    <button type="button" class="ms-auto -mx-1.5 -my-1.5 bg-red-50 text-red-500 rounded-lg focus:ring-2 focus:ring-red-400 p-1.5 hover:bg-red-200 inline-flex items-center justify-center h-8 w-8 dark:bg-gray-800 dark:text-red-400 dark:hover:bg-gray-700"  data-dismiss-target="#alert-border-2" aria-label="Close">
+      <span class="sr-only">Dismiss</span>
+      <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+      </svg>
+    </button>
+</div> -->
         <div>
             <label for="first_name" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Post title</label>
-            <input type="text" id="first_name" v-model="this.formData.name" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Create post title" required />
+            <input type="text" id="first_name" v-model="this.formData.title" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Create post title" required />
         </div>
         <div>
             <label for="last_name" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Post description</label>
@@ -45,18 +56,18 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr
+                            <tr  v-for="post in postData" :key="post.id"
                             >
                                 <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
                                     <div class="flex items-center">
 
                                         <div class="ml-3">
-                                            <p class="text-gray-900 whitespace-no-wrap">ko</p>
+                                            <p class="text-gray-900 whitespace-no-wrap">{{ post.title }}</p>
                                         </div>
                                     </div>
                                 </td>
                                 <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                                    <p class="text-gray-900 whitespace-no-wrap">mail@.com</p>
+                                    <p class="text-gray-900 whitespace-no-wrap">{{ post.description }}</p>
                                 </td>
                                 <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
                                     <p class="text-gray-900 whitespace-no-wrap">photo</p>
@@ -94,14 +105,15 @@ import Sidebar from '../Sidebar.vue';
         data() {
             return {
                 formData: {
-                    name : "",
+                    title : "",
                     description : "",
-                    file : null
-                }
+                    file : null,
+                },
+                postData : {}
             }
         },
         computed: {
-        ...mapGetters(["storeUserData"]),
+        ...mapGetters(["storeUserData","storePostData","storeToken"]),
         },
         methods: {
             handleFileChange(event) {
@@ -110,24 +122,45 @@ import Sidebar from '../Sidebar.vue';
         },
      async   handleSubmit(){
             const formData = new FormData();
-            formData.append('name', this.formData.name);
+            formData.append('title', this.formData.title);
             formData.append('description', this.formData.description);
             formData.append('file', this.formData.file);
-           await api.post('/api/posts', formData)
-                .then((response) => {
-                    this.$store.dispatch("getUserData", response.data);
-                   console.log(response.data);
-                   console.log(this.storeUserData);
 
-                })
-                .catch((error) => {
-                    console.error(error);
-                });
+          try {
+             const response = await api.post('/api/posts',formData)
+             this.$store.dispatch("createPost", response.data);
+             this.postData = this.storePostData
 
-            console.log('Form data submitted:', this.formData);
+             console.log(this.postData);
 
-        }
+            return response.data;
+
+          } catch (error) {
+            console.log(error);
+
+            return error;
+          }
+
+
         },
+
+        },
+        mounted() {
+
+         api.get('/api/allposts').then(res => {
+            this.$store.dispatch("allPosts", res.data);
+            this.postData = this.storePostData.posts.data
+
+         })
+
+
+        if (this.storeToken != null) {
+            this.loginStatus = true;
+        } else {
+            this.loginStatus = false;
+            this.$router.push("/login");
+        }
+    },
     }
 </script>
 
