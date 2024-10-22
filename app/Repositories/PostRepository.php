@@ -57,4 +57,7 @@ class PostRepository implements PostInterface
     {
        return  Post::where('id', $id)->delete();
     }
+    public function PostLists(){
+        return Post::all();
+    }
 }

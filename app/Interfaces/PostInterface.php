@@ -8,5 +8,6 @@ interface PostInterface{
     public function edit($id);
     public function update($request,$id);
     public function destroy($id);
+    public function PostLists();
 
 }

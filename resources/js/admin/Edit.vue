@@ -134,7 +134,7 @@
                                                 </label>
                                                 <select
                                                     id="role"
-                                                    v-model="formData.roles.id"
+                                                    v-model="formData.roles"
                                                     class="block w-full px-3 py-2 text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                                                 >
                                                     <option

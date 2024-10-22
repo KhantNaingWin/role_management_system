@@ -16,7 +16,7 @@
                             <h2
                                 class="text-xl font-semibold text-gray-700 leading-tight"
                             >
-                                Users
+                                This is editor page of the application
                             </h2>
 
                             <div class="mt-3 flex flex-col sm:flex-row">

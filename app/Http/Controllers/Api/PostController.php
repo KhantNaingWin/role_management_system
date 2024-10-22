@@ -81,4 +81,12 @@ class PostController extends Controller
         $this->postInterface->destroy($id);
         return response()->json(['message' => 'Post deleted successfully']);
     }
+    public function postLists(){
+        $posts = $this->postInterface->PostLists();
+        if($posts){
+            return response()->json($posts);
+        }else{
+            return response()->json(["message"=> "no post data"],404);
+        }
+    }
 }

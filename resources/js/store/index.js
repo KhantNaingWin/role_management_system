@@ -7,7 +7,8 @@ export default createStore({
     token: localStorage.getItem('token'),
     postData: [],
     roles: [],
-    permissions: []
+    permissions: [],
+    userposts: []
   },
   getters: {
     isAuthenticated: state => !!state.token,
@@ -15,6 +16,7 @@ export default createStore({
     storeUserData: state => state.userData,
     storePostData: state => state.postData,
     storeRoles: state => state.roles,
+    userposts : state => state.userposts,
   },
   mutations: {
     setToken(state, token) {
@@ -74,6 +76,10 @@ export default createStore({
       deleteRole(state, roleId) {
         state.roles = state.roles.filter(role => role.id !== roleId); // Remove role from the list
       },
+      //user post list
+      postlists(state,postlists){
+        state.userposts = postlists;
+      }
   },
   actions: {
     login({ commit }, token) {
@@ -142,6 +148,12 @@ export default createStore({
         await api.delete(`api/role/${roleId}`);
         commit('deleteRole', roleId); // Remove role from the store
       },
+
+      //user
+      async userpostlists({ commit }) {
+        const response = await api.get("api/posts");
+        commit('postlists', response.data);
+      }
 
   },
   modules: {},

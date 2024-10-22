@@ -22,5 +22,6 @@ Route::middleware('auth:api')->group(function(){
     Route::resource('/role',RoleController::class);
     Route::resource('/permission',PermissionController::class);
     Route::get('/users', [UserController::class, 'userLists']);
+    Route::get('/posts',[PostController::class,'postLists'])->middleware('permission:read');
 });
 
