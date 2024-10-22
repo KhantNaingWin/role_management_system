@@ -21,8 +21,8 @@ class UserController extends Controller
              // Return roles in a JSON response
              return response()->json([
                  'success' => true,
-                 'roles' => $roles,
-                 'userlist' => $allusers,
+                   $roles,
+                  $allusers,
              ]);
          }
 

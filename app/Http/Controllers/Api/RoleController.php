@@ -31,7 +31,8 @@ class RoleController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $role = $this->roleInterface->store($request);
+        return response()->json($role,200);
     }
 
     /**
@@ -47,7 +48,8 @@ class RoleController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $role = $this->roleInterface->edit($id);
+        return response()->json($role,200);
     }
 
     /**
@@ -55,7 +57,8 @@ class RoleController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $role = $this->roleInterface->update($request,$id);
+        return response()->json($role,200);
     }
 
     /**
@@ -63,6 +66,7 @@ class RoleController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $role = $this->roleInterface->destroy($id);
+        return response()->json($role,200);
     }
 }

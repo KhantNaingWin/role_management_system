@@ -96,26 +96,26 @@ async function roleBasedAuth(requiredRole, next) {
 
     try {
         // Verify the user's role by making an API call
-        const response = await api.get('/api/admin', {
+        const response = await api.get('/api/users', {
             headers: {
                 Authorization: `Bearer ${token}`, // Use the token in the request headers
             },
         });
+            
 
         // Extract roles from the response
-        const roles = response.data.flatMap(user => user.roles.map(role => role.name));
-
+        const roles = response.data[1].flatMap(user => user.roles.map(role => role.name));
         if (roles.includes(requiredRole)) {
             // Allow navigation if the required role matches
             return next();
         } else {
             // Redirect based on role if it doesn't match the required role
-            const userRole = roles[0]; // Get the first role (you can change this logic as needed)
+            const userRole = roles; // Get the first role (you can change this logic as needed)
             return redirectToRoleHome(userRole, next);
         }
 
     } catch (error) {
-        console.error(error);
+        console.errosr(error);
         // Redirect to login if there is an error
         next({ name: 'login' });
     }

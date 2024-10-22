@@ -9,7 +9,6 @@ export default {
     data() {
         return {
             loginStatus: false,
-            userlists: [],
             currentRole: "",
             formData: {
                 name: '',
@@ -22,18 +21,15 @@ export default {
     },
     computed: {
         ...mapGetters(["storeToken", "storeUserData"]),
+        userData() {
+            return this.storeUserData;
+        }
     },
     methods: {
         async fetchData() {
-            try {
-                const response = await api.get("api/admin");
-                this.$store.dispatch("getUserData", response.data);
-                this.userlists = this.storeUserData;
 
-                this.currentRole = this.storeUserData.roles;
-            } catch (error) {
-                console.error(error);
-            }
+            this.$store.dispatch("getUserData");
+
         },
 
         //role change
@@ -46,22 +42,24 @@ export default {
             this.$router.push(`/admin/account/edit/${userID}`)
         },
        async  userDelete (userID){
-            const originalUserList = [...this.userlists]
-            this.userlists = this.userlists.filter(user => user.id !== userID);
-            try {
-                // Send a DELETE request to the server
-                await api.delete(`/api/admin/${userID}`);
-            } catch (error) {
-                // If the server request fails, restore the original user list
-                this.userlists = originalUserList;
-                console.error("Error deleting user from the server:", error);
-            }
+        this.$store.dispatch("deleteUser", userID);
+        this.fetchData();
+
+            // this.userlists = this.userlists.filter(user => user.id !== userID);
+            // try {
+            //     // Send a DELETE request to the server
+            //     await api.delete(`/api/admin/${userID}`);
+            // } catch (error) {
+            //     // If the server request fails, restore the original user list
+            //     this.userlists = originalUserList;
+            //     console.error("Error deleting user from the server:", error);
+            // }
         },
 
     },
 
    async mounted() {
-        await this.fetchData();
+        this.fetchData();
         if (localStorage.getItem("token") != null) {
             this.loginStatus = true;
         } else {

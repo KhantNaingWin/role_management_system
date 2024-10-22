@@ -13,13 +13,12 @@
                 <div class="container mx-auto px-6 py-8">
                     <div class="mt-8">
                         <div class="mt-6">
-
                             <div
                                 class="sm:-mx-8 px-4 sm:px-8 py-4 overflow-x-auto"
                             >
                                 <!-- message button  -->
                                 <div
-                                v-if="messageStatus"
+                                    v-if="messageStatus"
                                     id="toast-success"
                                     class="flex content-center mx-auto items-center w-full max-w-xs p-4 mb-4 text-gray-500 bg-white rounded-lg shadow dark:text-gray-400 dark:bg-gray-800"
                                     role="alert"
@@ -98,6 +97,7 @@
                                                     Email
                                                 </label>
                                                 <input
+                                                    value="{{ editUser[0].email }}"
                                                     class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                                                     id="useremail"
                                                     type="email"
@@ -121,64 +121,30 @@
                                                     v-model="
                                                         this.formData.password
                                                     "
+                                                    value="editUse"
                                                     placeholder="*****"
                                                 />
-                                                <!-- <p
-                                                    class="text-red-500 text-xs italic"
-                                                >
-                                                    Please choose a password.
-                                                </p> -->
                                             </div>
-                                            <div class="mb-6">
-                                                <p>Permissions</p>
-                                            </div>
-                                            <div
-                                                class="mb-6 grid grid-cols-2 gap-3"
-                                            >
-                                                <div
-                                                    class=""
-                                                    v-for="permission in this
-                                                        .permissions"
-                                                    :key="permission.id"
+                                            <div class="mb-4">
+                                                <label
+                                                    for="role"
+                                                    class="block text-gray-700 text-sm font-bold mb-2"
                                                 >
-                                                    <input
-                                                        type="checkbox"
-                                                        v-model="
-                                                            formData
-                                                                .permissions
-                                                        "
-                                                        :value="permission.name"
-                                                    />
-                                                    <label
-                                                        for=""
-                                                        class="ms-2"
-                                                        >{{
-                                                            permission.name
-                                                        }}</label
+                                                    Role
+                                                </label>
+                                                <select
+                                                    id="role"
+                                                    v-model="formData.roles.id"
+                                                    class="block w-full px-3 py-2 text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                                >
+                                                    <option
+                                                        v-for="role in roles"
+                                                        :key="role.id"
+                                                        :value="role.id"
                                                     >
-                                                </div>
-                                            </div>
-                                            <div class="">
-                                                <p>Roles</p>
-                                            </div>
-                                            <div
-                                                class="mb-6 grid grid-cols-2 gap-3"
-                                            >
-                                                <div
-                                                    v-for="role in this.roles"
-                                                    :key="role.id"
-                                                >
-                                                    <input
-                                                        type="checkbox"
-                                                        v-model="formData.roles"
-                                                        :value="role.name"
-                                                    />
-                                                    <label
-                                                        for=""
-                                                        class="ms-2"
-                                                        >{{ role.name }}</label
-                                                    >
-                                                </div>
+                                                        {{ role.name }}
+                                                    </option>
+                                                </select>
                                             </div>
                                             <div
                                                 class="flex items-center justify-between"
@@ -206,41 +172,37 @@
 import { mapGetters } from "vuex/dist/vuex.cjs.js";
 import api from "../api/api";
 import Sidebar from "./Sidebar.vue";
-import { useId } from "vue";
-
 export default {
     components: {
         Sidebar,
     },
     data() {
         return {
-            roles: [],
-            permissions: [],
             formData: {
-                name: "",
-                email: "",
-                password: "",
-                permissions: [],
-                roles: [],
-            },
-            message: "",
-            messageStatus : false ,
-            userId: null
+            name: "",
+            email: "",
+            password: "",
+            roles: {},
+        },
+        message: "",
+        messageStatus: false,
+        userId: null,
         };
     },
     computed: {
-        ...mapGetters(["storeUserData","storeRoles","storePermission"]),
+        ...mapGetters(["storeEditUser", "storeRoles"]),
+        roles() {
+            return this.storeRoles;
+        },
     },
+
     methods: {
         async UpdateUser() {
-            console.log(this.userId,this.formData);
 
             await api
                 .put(`/api/admin/${this.userId}`, this.formData)
                 .then((res) => {
                     console.log(res.data);
-
-                    // this.$store.dispatch("getUserData", res.data);
                     this.formData = {};
                     this.message = res.data.message;
                     this.messageStatus = true;
@@ -250,40 +212,28 @@ export default {
                 });
         },
         async fetchData(userId) {
+            this.$store.dispatch("getRoles");
+            //
 
+            try {
+                const response = await api.get(`/api/admin/${userId}/edit`);
+                this.formData = response.data[0];
+                this.formData.roles = response.data[0].roles[0];
+            } catch (error) {
+                console.error("Error fetching data:", error);
+            }
 
-            await  api.get(`/api/admin/${userId}/edit`).then(res=>{
-                this.$store.dispatch("getUserData", res.data);
-                    this.formData.name = this.storeUserData[0].name
-                    this.formData.email = this.storeUserData[0].email
-                    this.formData.permissions =this.storeUserData[2].map((p)=>p.name)
-        this.formData.roles = this.storeUserData[0].roles.map(r => r.name);
-
-            })
-            const response = await api.get("api/role");
-                const res = await api.get("api/permission");
-                this.$store.dispatch("getPermissions", res.data);
-                this.permissions = this.storePermission;
-
-                this.$store.dispatch("getRoles", response.data);
-                this.roles = this.storeRoles;
-
-
+            //
         },
     },
 
-     mounted() {
-
+    mounted() {
         if (this.$route.params.id) {
-        this.userId = this.$route.params.id;
-        this.fetchData(this.userId);
-
-    } else {
-        console.error("No ID found in the route parameters");
-    }
-
+            this.userId = this.$route.params.id;
+            this.fetchData(this.userId);
+        } else {
+            console.error("No ID found in the route parameters");
+        }
     },
 };
 </script>
-
-<style lang="scss" scoped></style>

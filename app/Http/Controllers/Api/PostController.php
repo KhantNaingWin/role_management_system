@@ -3,17 +3,25 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\PostRequest;
+use App\Interfaces\PostInterface;
 use Illuminate\Http\Request;
 
 class PostController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+    public function __construct(private PostInterface $postInterface)
+    {
+
+    }
     public function index()
     {
-        //
+        $posts = $this->postInterface->all();
+        if ($posts) {
+            return response()->json($posts);
+    }else{
+        return response()->json(["message"=> "no post data"],404);
     }
+        }
 
     /**
      * Show the form for creating a new resource.
@@ -26,9 +34,14 @@ class PostController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(PostRequest $request)
     {
-        //
+
+       $post = $this->postInterface->store($request);
+       return response()->json([
+        'message' => 'Post created successfully',
+        'post' => $post
+    ], 201);
     }
 
     /**
@@ -44,7 +57,8 @@ class PostController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $post = $this->postInterface->edit($id);
+        return response()->json($post);
     }
 
     /**
@@ -52,7 +66,11 @@ class PostController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $post = $this->postInterface->update($request, $id);
+        return response()->json([
+            'message' => 'Post updated successfully',
+            $post
+        ], 200);
     }
 
     /**
@@ -60,6 +78,7 @@ class PostController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $this->postInterface->destroy($id);
+        return response()->json(['message' => 'Post deleted successfully']);
     }
 }

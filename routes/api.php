@@ -15,11 +15,12 @@ use App\Http\Controllers\AuthenticatedSessionController;
 Route::post('/register', [RegisteredUserController::class, 'store']);
 
 Route::post('/login', [AuthenticatedSessionController::class, 'login']);
-Route::middleware('auth:sanctum')->group(function(){
+Route::middleware('auth:api')->group(function(){
     Route::post('/logout', [AuthenticatedSessionController::class, 'destroy']);
     Route::resource('/admin',AdminController::class);
     Route::resource('/post',PostController::class);
     Route::resource('/role',RoleController::class);
     Route::resource('/permission',PermissionController::class);
+    Route::get('/users', [UserController::class, 'userLists']);
 });
 

@@ -1,7 +1,7 @@
 <template>
 
-    <div x-data="{ sidebarOpen: false }" class="flex h-screen bg-gray-200 font-roboto">
-        <div x-cloak class="fixed inset-0 z-20 transition-opacity bg-black opacity-50 lg:hidden"></div>
+    <div  class="flex h-screen bg-gray-200 font-roboto">
+        <div  class="fixed inset-0 z-20 transition-opacity bg-black opacity-50 lg:hidden"></div>
                 <Sidebar/>
             <div class="flex-1 flex flex-col overflow-hidden">
 
@@ -70,8 +70,9 @@
                             </tr>
                         </thead>
                         <tbody>
+                            <!-- {{ userData }} -->
                             <tr
-                            v-for="userlist in this.userlists" :key="userlist.id"
+                            v-for="userlist in userData" :key="userlist.id"
                             >
                                 <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
                                     <div class="flex items-center">

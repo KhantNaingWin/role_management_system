@@ -15,4 +15,4 @@ const router = createRouter({
 });
 
 
-createApp(App).use(store).use(router).use(VueSweetalert2).mount('#app')
+createApp(App).use(store).use(router).mount('#app')

@@ -13,13 +13,12 @@
                 <div class="container mx-auto px-6 py-8">
                     <div class="mt-8">
                         <div class="mt-6">
-
                             <div
                                 class="sm:-mx-8 px-4 sm:px-8 py-4 overflow-x-auto"
                             >
                                 <!-- message button  -->
                                 <div
-                                v-if="messageStatus"
+                                    v-if="messageStatus"
                                     id="toast-success"
                                     class="flex content-center mx-auto items-center w-full max-w-xs p-4 mb-4 text-gray-500 bg-white rounded-lg shadow dark:text-gray-400 dark:bg-gray-800"
                                     role="alert"
@@ -86,7 +85,7 @@
                                                     class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                                                     id="username"
                                                     type="text"
-                                                    v-model="this.formData.name"
+                                                    v-model="formData.name"
                                                     placeholder="Username"
                                                 />
                                             </div>
@@ -101,9 +100,7 @@
                                                     class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                                                     id="useremail"
                                                     type="email"
-                                                    v-model="
-                                                        this.formData.email
-                                                    "
+                                                    v-model="formData.email"
                                                     placeholder="Useremail"
                                                 />
                                             </div>
@@ -118,9 +115,7 @@
                                                     class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
                                                     id="password"
                                                     type="password"
-                                                    v-model="
-                                                        this.formData.password
-                                                    "
+                                                    v-model="formData.password"
                                                     placeholder="*****"
                                                 />
                                                 <!-- <p
@@ -129,36 +124,6 @@
                                                     Please choose a password.
                                                 </p> -->
                                             </div>
-                                            <div class="mb-6">
-                                                <p>Permissions</p>
-                                            </div>
-                                            <div
-                                                class="mb-6 grid grid-cols-2 gap-3"
-                                            >
-                                                <div
-                                                    class=""
-                                                    v-for="permission in this
-                                                        .permissions"
-                                                    :key="permission.id"
-                                                >
-                                                    <input
-                                                        type="checkbox"
-                                                        v-model="
-                                                            this.formData
-                                                                .permission
-                                                        "
-                                                        :value="permission.name"
-                                                        
-                                                    />
-                                                    <label
-                                                        for=""
-                                                        class="ms-2"
-                                                        >{{
-                                                            permission.name
-                                                        }}</label
-                                                    >
-                                                </div>
-                                            </div>
                                             <div class="">
                                                 <p>Roles</p>
                                             </div>
@@ -166,15 +131,13 @@
                                                 class="mb-6 grid grid-cols-2 gap-3"
                                             >
                                                 <div
-                                                    v-for="role in this.roles"
+                                                    v-for="role in role"
                                                     :key="role.id"
                                                 >
                                                     <input
-                                                        type="checkbox"
-                                                        v-model="
-                                                            this.formData.role
-                                                        "
-                                                        :value="role.name"
+                                                        type="radio"
+                                                        v-model="formData.role"
+                                                        :value="role.id"
                                                     />
                                                     <label
                                                         for=""
@@ -217,44 +180,34 @@ export default {
     data() {
         return {
             roles: [],
-            permissions: [],
             formData: {
                 name: "",
                 email: "",
                 password: "",
-                permission: [],
-                role: [],
-                message: "",
-                messageStatus : false ,
             },
+            message: "",
+
+            messageStatus: false,
         };
     },
     computed: {
-        ...mapGetters(["storePermission", "storeRoles"]),
+        ...mapGetters(["storeRoles"]),
+        role() {
+            return this.storeRoles;
+        },
+        permission() {
+            return this.storePermission;
+        },
     },
     methods: {
-        async createNewUser() {
-            await api
-                .post("/api/admin", this.formData)
-                .then((res) => {
-                    this.$store.dispatch("getUserData", res.data);
-                    this.formData = {};
-                    this.message = res.data.message;
-                    this.messageStatus = true;
-                })
-                .catch((error) => {
-                    console.log(error);
-                });
+        createNewUser() {
+            this.$store.dispatch("createUser", this.formData);
+            this.messageStatus = true;
         },
         async fetchData() {
+            this.messageStatus = false;
             try {
-                const response = await api.get("api/role");
-                const res = await api.get("api/permission");
-                this.$store.dispatch("getPermissions", res.data);
-                this.permissions = this.storePermission;
-
-                this.$store.dispatch("getRoles", response.data);
-                this.roles = this.storeRoles;
+                this.$store.dispatch("getRoles");
             } catch (error) {
                 console.error(error);
             }

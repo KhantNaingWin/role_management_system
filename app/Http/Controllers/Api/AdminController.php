@@ -58,15 +58,17 @@ class AdminController extends Controller
     public function edit(string $id)
     {
        $user = $this->adminInterface->edit($id);
-       $roles = $user->getRoleNames();
-       $permissions = $user->getAllPermissions();
-       return response()->json([
-        "message"=> "edit data",
-        $user,
-        $roles,
-        $permissions
-       ]);
+       $user->load('roles');
+       if($user){
+        return response()->json([
+           $user,
+        ]);
+       }else{
+        return response()->json([
+            'message'=> 'User not found'
+        ],404);
     }
+}
 
     /**
      * Update the specified resource in storage.

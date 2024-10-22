@@ -14,7 +14,7 @@ class AdminRepository implements AdminInterface
     public function all()
     {
 
-        return User::all();
+        return User::all()->except(auth()->id());
     }
 
     public function store($request)
@@ -26,10 +26,6 @@ class AdminRepository implements AdminInterface
         // Assign the roles to the user
     if ($request->role) {
         $data->assignRole($request->role);
-    }
-         // Assign permissions to the user
-    if ($request->permission) {
-        $data->givePermissionTo($request->permission);
     }
         $data->save();
     }
@@ -51,12 +47,6 @@ class AdminRepository implements AdminInterface
         $data->syncRoles($request->roles);
     } else {
         $data->roles()->detach();
-    }
-
-    if ($request->permissions) {
-        $data->syncPermissions($request->permissions);
-    } else {
-        $data->permissions()->detach();
     }
 
     // Save the changes

@@ -2,10 +2,11 @@
 
 namespace App\Repositories;
 
-use App\Interfaces\PostInterface;
-use App\Models\User;
+use App\Models\Post;
 use App\Models\Admin;
+use App\Interfaces\PostInterface;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 
 class PostRepository implements PostInterface
 {
@@ -13,34 +14,47 @@ class PostRepository implements PostInterface
     public function all()
     {
 
-        return User::all();
+        return Post::all();
     }
 
     public function store($request)
     {
-        $data = new Admin();
-        $data->name = $request->name;
-        $data->email = $request->email;
-        $data->password = Hash::make($request->password);
-        $data->save();
+        $request->validated();
+        $post = new Post();
+        $post->title = $request->title;
+        $post->description = $request->description;
+        if ($request->hasFile('image')) {
+            // Store the image in the 'public/images' directory
+            $imagePath = $request->file('image')->getClientOriginalName();
+           $request->file('image')->storeAs('public/images', $imagePath);
+            $post->image = $imagePath;
+        }
+        $post->save();
+        return $post;
+
+
+
     }
     public function edit($id)
     {
-        return Admin::where('id', $id)->first();
+        return Post::find($id);
     }
     public function update($request, $id)
     {
 
-        $data = Admin::where('id', $id)->first();
-        if ($data->password != null) {
-            $data->name = $request->name;
-            $data->email = $request->email;
-            $data->password =  Hash::make($request->password);
-            $data->update();
+        $data = Post::where('id', $id)->first();
+        $data->title = $request->title;
+        $data->description = $request->description;
+        if ($request->hasFile('image')) {
+            // Store the image in the 'public/images' directory
+            $imagePath = $request->file('image')->getClientOriginalName();
+           $request->file('image')->storeAs('public/images', $imagePath);
+            $data->image = $imagePath;
         }
+        $data->update();
     }
     public function destroy($id)
     {
-        Admin::where('id', $id)->delete();
+       return  Post::where('id', $id)->delete();
     }
 }

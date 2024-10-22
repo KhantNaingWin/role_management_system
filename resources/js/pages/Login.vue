@@ -106,7 +106,7 @@ export default {
         };
     },
     computed: {
-        ...mapGetters(["storeToken", "storeUserData"]),
+        ...mapGetters(["storeToken"]),
     },
     methods: {
         // this is login user data
@@ -119,11 +119,14 @@ export default {
                 .then((response) => {
                     const token = response.data.token;
                     const userData = response.data.user;
+                    // console.log(userData,token);
+
                     if (token) {
                         this.loginStatus = true;
                         this.$store.dispatch("login", token);
-                        this.$store.dispatch("getUserData", userData);
-                        let role = this.storeUserData.roles[0]?.name;
+                        // console.log(this.userData);
+
+                        let role = userData.roles[0]?.name;
                             if(role === 'admin'){
                                 this.$router.push('/admin/home')
                             }else if(
@@ -140,8 +143,9 @@ export default {
                     }
                 })
                 .catch((error) => {
+                    console.info(error)
                     this.errorStatus = true;
-                    this.errorMessage = error.response.data.message;
+                    this.errorMessage = error;
                     this.formData = {};
                 });
 
