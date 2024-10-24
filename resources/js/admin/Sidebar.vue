@@ -25,8 +25,8 @@
                     />
                 </svg>
 
-                <span class="mx-2 text-2xl font-semibold text-white"
-                    >Admin</span
+                <button @click="Profile" class="mx-2 text-2xl font-semibold text-white"
+                    >Profile</button
                 >
             </div>
         </div>
@@ -87,8 +87,10 @@ export default {
         },
         rolePage(){
             this.$router.push('/admin/role')
-            console.log('hello I will send you to there');
 
+        },
+        Profile(){
+            this.$router.push('/admin/profile')
         }
 
     },

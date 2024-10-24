@@ -19,6 +19,7 @@ class AdminRepository implements AdminInterface
 
     public function store($request)
     {
+        // dd($request);
         $data = new User();
         $data->name = $request->name;
         $data->email = $request->email;
@@ -28,6 +29,7 @@ class AdminRepository implements AdminInterface
         $data->assignRole($request->role);
     }
         $data->save();
+        return $data;
     }
     public function edit($id)
     {

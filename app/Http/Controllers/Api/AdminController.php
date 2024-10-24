@@ -9,19 +9,23 @@ use App\Http\Controllers\Controller;
 
 class AdminController extends Controller
 {
-    public function __construct(private AdminInterface $adminInterface )
+    public function __construct(private AdminInterface $adminInterface)
     {
 
     }
     public function index()
     {
-        $admins=$this->adminInterface->all();
-        $admins->load('roles');
-        if($admins){
-            return response()->json($admins);
-        }else{
-            return response()->json(["message"=> "no admin data"],404);
+        if (auth()->user()->hasPermissionTo('read')) {
+            $admins = $this->adminInterface->all();
+            $admins->load('roles');
+            if ($admins) {
+                return response()->json($admins);
+            } else {
+                return response()->json(["message" => "no admin data"], 404);
+            }
+
         }
+        return response()->json(["message" => "no permission"], 403);
     }
 
     /**
@@ -37,11 +41,16 @@ class AdminController extends Controller
      */
     public function store(Request $request)
     {
-       $data = $this->adminInterface->store($request);
-       return response()->json([
-        "message"=> "Create successfully",
-        $data
-       ],200);
+        if (auth()->user()->hasPermissionTo('create')) {
+            $data = $this->adminInterface->store($request);
+            return response()->json([
+                "message" => "Create successfully",
+                $data
+            ], 200);
+        }
+        return response()->json([
+            "message" => "no permission",
+        ]);
     }
 
     /**
@@ -57,29 +66,40 @@ class AdminController extends Controller
      */
     public function edit(string $id)
     {
-       $user = $this->adminInterface->edit($id);
-       $user->load('roles');
-       if($user){
+        if(auth()->user()->hasPermissionTo("read")) {
+            $user = $this->adminInterface->edit($id);
+        $user->load('roles');
+        if ($user) {
+            return response()->json([
+                $user,
+            ]);
+        } else {
+            return response()->json([
+                'message' => 'User not found'
+            ], 404);
+        }
+        }
         return response()->json([
-           $user,
+            'message'=> 'no permission',
         ]);
-       }else{
-        return response()->json([
-            'message'=> 'User not found'
-        ],404);
     }
-}
 
     /**
      * Update the specified resource in storage.
      */
     public function update(Request $request, string $id)
     {
-        $data = $this->adminInterface->update( $request,$id);
+        if(auth()->user()->hasPermissionTo('update')) {
+
+        $data = $this->adminInterface->update($request, $id);
         return response()->json([
             'message' => 'User updated successfully',
             'data' => $data
         ], 200);
+        }
+        return response()->json([
+            'message'=> 'no permission'
+        ]);
     }
 
     /**
@@ -87,9 +107,14 @@ class AdminController extends Controller
      */
     public function destroy(string $id)
     {
-       $this->adminInterface->destroy($id);
+       if(auth()->user()->hasPermissionTo('delete')) {
+        $this->adminInterface->destroy($id);
         return response()->json([
-            'message'=> 'Deleted'
+            'message' => 'Deleted'
         ]);
+       }
+       return response()->json([
+        'message'=> 'no permission'
+       ]);
     }
 }

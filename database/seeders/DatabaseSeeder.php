@@ -19,6 +19,11 @@ class DatabaseSeeder extends Seeder
         Permission::create(['name' => 'read']);
         Permission::create(['name' => 'update']);
         Permission::create(['name' => 'delete']);
+        Permission::create(['name'=> 'post_create']);
+        Permission::create(['name'=> 'post_read']);
+        Permission::create(['name'=> 'update_post']);
+        Permission::create(['name'=> 'delete_post']);
+
 
        Role::create(['name' => 'admin'])->givePermissionTo(Permission::all());
        Role::create(['name' => 'editor'])->givePermissionTo(['create','read','update']);

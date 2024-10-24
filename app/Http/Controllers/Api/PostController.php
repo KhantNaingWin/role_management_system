@@ -15,12 +15,15 @@ class PostController extends Controller
     }
     public function index()
     {
-        $posts = $this->postInterface->all();
+        if(auth()->user()->can("post_read")){
+            $posts = $this->postInterface->all();
         if ($posts) {
             return response()->json($posts);
     }else{
         return response()->json(["message"=> "no post data"],404);
     }
+        }
+        return response()->json(["message"=> "no permission"]);
         }
 
     /**
@@ -37,11 +40,13 @@ class PostController extends Controller
     public function store(PostRequest $request)
     {
 
-       $post = $this->postInterface->store($request);
+       if(auth()->user()->can("post_create")){
+        $post = $this->postInterface->store($request);
        return response()->json([
         'message' => 'Post created successfully',
         'post' => $post
     ], 201);
+       }
     }
 
     /**

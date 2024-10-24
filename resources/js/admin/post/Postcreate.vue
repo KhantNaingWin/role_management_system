@@ -123,9 +123,8 @@ export default {
 
             try {
                 if (this.editingPostId) {
-                    
 
-                    // If editing, include the post ID to update
+
                     await this.$store.dispatch("updatePost", { id: this.editingPostId, ...postData }); // Dispatch an update action
                 } else {
                     this.postData.push(postData)

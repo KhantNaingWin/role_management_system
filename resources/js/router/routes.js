@@ -4,12 +4,12 @@ import Home from "../user/Home.vue";
 import AdminHome from "../admin/Home.vue";
 import api from "../api/api";
 import store from "../store";
-import Editor from "../editor/Home.vue";
 import PostPage from "../admin/post/Postcreate.vue";
 import Mainlayout from "../Mainlayout.vue";
 import RoleManagement from "../role/RoleManagement.vue";
 import Edit from "../admin/Edit.vue";
 import Create from "../admin/Create.vue";
+import Profile from "../components/Profile.vue";
 
 export const routes = [
     {
@@ -68,6 +68,14 @@ export const routes = [
         }
     },
     {
+        path: '/admin/profile',
+        name: 'admin-profile',
+        component: Profile,
+        beforeEnter: async (to, from, next) => {
+            await roleBasedAuth('admin', next);
+        }
+    },
+    {
         path: '/user/home',
         name: 'user-home',
         component: Home,
@@ -78,7 +86,7 @@ export const routes = [
     {
         path: '/editor/home',
         name: 'editor-home',
-        component: Editor,
+        component: AdminHome,
         beforeEnter: async (to, from, next) => {
             await roleBasedAuth('editor', next);
         }
@@ -101,7 +109,7 @@ async function roleBasedAuth(requiredRole, next) {
                 Authorization: `Bearer ${token}`, // Use the token in the request headers
             },
         });
-            
+
 
         // Extract roles from the response
         const roles = response.data[1].flatMap(user => user.roles.map(role => role.name));
