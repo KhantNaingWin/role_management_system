@@ -1,6 +1,6 @@
-import api from "../api/api";
 import Sidebar from "./Sidebar.vue";
 import { mapGetters } from "vuex";
+
 export default {
     name: "Home",
     components: {
@@ -9,57 +9,93 @@ export default {
     data() {
         return {
             loginStatus: false,
-            currentRole: "",
+            currentRole: null,
+            userlists: null,
             formData: {
                 name: '',
                 email: '',
                 password: ''
-              },
-              roles : null
-
+            },
+            roles: null,
+            editingRoleId: null,
+            selectedRole: '',
+            successMessage: '',
+            permissions: null,
         };
     },
     computed: {
-        ...mapGetters(["storeToken", "storeUserData"]),
-        userData() {
-            return this.storeUserData;
+        ...mapGetters(["storeToken", "storeUserData", "storeRoles","authPermission","authRole"]),
+    },
+    watch: {
+        storeUserData(userData) {
+            this.userlists = userData;
+        },
+        storeRoles(allRoles) {
+            this.roles = allRoles;
+        },
+        authPermission(permissions) {
+           this.permissions = permissions;
+
+        },
+        authRole(role) {
+            this.currentRole = role;
         }
     },
     methods: {
+        showRoleSelect(userId) {
+            this.editingRoleId = userId;
+        },
+        async changeUserRole(userId, newRole) {
+            try {
+                await this.$store.dispatch("updateUserRole", { userId, newRole });
+                this.successMessage = 'Role changed successfully!';
+                this.editingRoleId = null;
+
+                setTimeout(() => {
+                    this.successMessage = '';
+                }, 3000);
+
+                // Re-fetch data after role change
+                this.fetchData();
+            } catch (error) {
+                console.error('Failed to change user role:', error);
+                alert('Failed to change user role.');
+            }
+        },
         async fetchData() {
-
-            this.$store.dispatch("getUserData");
-
+            // Only fetch if user lists or roles are not already loaded
+            if (!this.userlists || !this.roles) {
+                this.$store.dispatch("getUserData");
+                this.$store.dispatch("getRoles");
+            }
+            // Fetch profile information
+            this.$store.dispatch('adminAuthProfile');
         },
-
-        //role change
-
         createData() {
-            this.$router.push('/user/create');
-
+                this.$router.push('/user/create');
         },
-        userEdit(userID){
-            this.$router.push(`/admin/account/edit/${userID}`)
+        userEdit(userID) {
+            this.$router.push(`/admin/account/edit/${userID}`);
         },
-       async  userDelete (userID){
-        this.$store.dispatch("deleteUser", userID);
-        this.fetchData();
-
-            // this.userlists = this.userlists.filter(user => user.id !== userID);
-            // try {
-            //     // Send a DELETE request to the server
-            //     await api.delete(`/api/admin/${userID}`);
-            // } catch (error) {
-            //     // If the server request fails, restore the original user list
-            //     this.userlists = originalUserList;
-            //     console.error("Error deleting user from the server:", error);
-            // }
+        async userDelete(userID) {
+            try {
+                await this.$store.dispatch("deleteUser", userID);
+                this.fetchData(); // Re-fetch data after deleting a user
+            } catch (error) {
+                console.error('Failed to delete user:', error);
+            }
         },
-
+        logout() {
+            this.$store.dispatch("logout");
+            this.$router.push("/login");
+            this.userlists = null;
+            this.roles = null;
+        }
     },
+    async mounted() {
+        this.fetchData(); // Fetch data when the component is mounted
 
-   async mounted() {
-        this.fetchData();
+        // Check login status
         if (localStorage.getItem("token") != null) {
             this.loginStatus = true;
         } else {

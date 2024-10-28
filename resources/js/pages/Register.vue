@@ -1,29 +1,57 @@
 <template>
-   <div class="mt-5">
-          <div class="container col-3 shadow-sm my-5 p-3">
-            <form action="" class="max-w-sm mx-auto"  @submit.prevent="submitForm">
-                <div class="mb-3">
-                  <label for="exampleInputEmail1" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Name</label>
-                  <input type="text" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" v-model="formData.name" aria-describedby="emailHelp">
-                  <small v-if="this.errorMessage != null" class="text-red-600">{{ this.errorMessage }}</small>
+    <div class="flex justify-center items-center min-h-screen bg-white px-6">
+        <div class="p-8 max-w-sm w-full bg-white shadow-lg rounded-lg transform transition duration-300 hover:shadow-xl">
+            <h2 class="text-2xl font-semibold text-center mb-6 text-gray-800">Register</h2>
+
+            <form @submit.prevent="submitForm">
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700">Name</label>
+                    <input
+                        type="text"
+                        v-model="formData.name"
+                        class="mt-2 w-full p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:border-indigo-600 focus:ring-1 focus:ring-indigo-600 transition duration-200"
+                    />
+                    <small v-if="errorMessage" class="text-red-600">{{ errorMessage }}</small>
                 </div>
-                <div class="mb-3">
-                  <label for="exampleInputEmail1" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Email</label>
-                  <input type="email" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" v-model="formData.email" aria-describedby="emailHelp">
-                  <small v-if="this.errorMessage != null" class="text-red-600">{{ this.errorMessage }}</small>
+
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700">Email</label>
+                    <input
+                        type="email"
+                        v-model="formData.email"
+                        class="mt-2 w-full p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:border-indigo-600 focus:ring-1 focus:ring-indigo-600 transition duration-200"
+                    />
+                    <small v-if="errorMessage" class="text-red-600">{{ errorMessage }}</small>
                 </div>
-                <div class="mb-3">
-                  <label for="exampleInputPassword1" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Password</label>
-                  <input type="password" v-model="formData.password" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" id="exampleInputPassword1">
+
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700">Password</label>
+                    <input
+                        type="password"
+                        v-model="formData.password"
+                        class="mt-2 w-full p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:border-indigo-600 focus:ring-1 focus:ring-indigo-600 transition duration-200"
+                    />
                 </div>
-                <div class="">
-                    <button type="submit" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Register</button>
-                    <router-link to="/login" class="ms-10 text-green-600">Do you have account?</router-link>
-                    <!-- <small >Do you have account?</small> -->
+
+                <div class="mt-6">
+                    <button
+                        type="submit"
+                        class="w-full py-2.5 bg-indigo-600 text-white rounded-lg hover:bg-indigo-500 transition duration-200 transform hover:scale-105"
+                    >
+                        Register
+                    </button>
+                </div>
+
+                <div class="mt-4 text-center">
+                    <router-link
+                        to="/login"
+                        class="text-sm text-indigo-600 hover:underline"
+                    >
+                        Already have an account? Log in
+                    </router-link>
                 </div>
             </form>
-
-          </div>
+        </div>
     </div>
 </template>
 

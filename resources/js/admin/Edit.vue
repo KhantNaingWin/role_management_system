@@ -85,25 +85,22 @@
                                                     class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                                                     id="username"
                                                     type="text"
-                                                    v-model="this.formData.name"
+                                                    v-model="formData.name"
                                                     placeholder="User name"
                                                 />
                                             </div>
                                             <div class="mb-4">
                                                 <label
                                                     class="block text-gray-700 text-sm font-bold mb-2"
-                                                    for="usereame"
+                                                    :for="formData.email"
                                                 >
                                                     Email
                                                 </label>
                                                 <input
-                                                    value="{{ editUser[0].email }}"
                                                     class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                                                    id="useremail"
+                                                    :id="formData.email"
                                                     type="email"
-                                                    v-model="
-                                                        this.formData.email
-                                                    "
+                                                    v-model="formData.email"
                                                     placeholder="User email"
                                                 />
                                             </div>
@@ -125,7 +122,7 @@
                                                     placeholder="*****"
                                                 />
                                             </div>
-                                            <div class="mb-4">
+                                            <!-- <div class="mb-4">
                                                 <label
                                                     for="role"
                                                     class="block text-gray-700 text-sm font-bold mb-2"
@@ -145,7 +142,7 @@
                                                         {{ role.name }}
                                                     </option>
                                                 </select>
-                                            </div>
+                                            </div> -->
                                             <div
                                                 class="flex items-center justify-between"
                                             >
@@ -179,46 +176,47 @@ export default {
     data() {
         return {
             formData: {
-            name: "",
-            email: "",
-            password: "",
-            roles: {},
-        },
-        message: "",
-        messageStatus: false,
-        userId: null,
+                name: "",
+                email: "",
+                password: "",
+            },
+            message: "",
+            messageStatus: false,
+            userId: null,
         };
     },
     computed: {
-        ...mapGetters(["storeEditUser", "storeRoles"]),
-        roles() {
-            return this.storeRoles;
+        ...mapGetters(["storeEditUser","updateSuccess"]),
+    },
+    watch: {
+        storeEditUser(newValue) {
+            this.formData = newValue[0];
+        },
+        updateSuccess(newValue) {
+            if (newValue) {
+                this.message = "User updated successfully";
+                this.messageStatus = true;
+                setTimeout(() => {
+                    this.message = "";
+                    this.messageStatus = false;
+                }, 3000);
+            }
+            else {
+                this.message = "Failed to update user";
+                this.messageStatus = false;
+            }
         },
     },
 
     methods: {
         async UpdateUser() {
-
-            await api
-                .put(`/api/admin/${this.userId}`, this.formData)
-                .then((res) => {
-                    console.log(res.data);
-                    this.formData = {};
-                    this.message = res.data.message;
-                    this.messageStatus = true;
-                })
-                .catch((error) => {
-                    console.log(error);
-                });
+            await this.$store.dispatch("updateUser", this.formData);
         },
         async fetchData(userId) {
-            this.$store.dispatch("getRoles");
-            //
+            // const response = await api.get(`/api/admin/${userId}/edit`);
 
             try {
-                const response = await api.get(`/api/admin/${userId}/edit`);
-                this.formData = response.data[0];
-                this.formData.roles = response.data[0].roles[0];
+                this.$store.dispatch("fetchEditUser", userId);
             } catch (error) {
                 console.error("Error fetching data:", error);
             }

@@ -19,23 +19,52 @@ class RoleRepository implements RoleInterface
 
     public function store($request)
     {
+        $request->validate([
+            "name" => "required",
+        ]);
         $data = new Role();
         $data->name = $request->name;
         $data->save();
+        $data->syncPermissions($request->permissions);
+        return $data->load('permissions');
+
     }
     public function edit($id)
     {
-        return Role::where('id', $id)->first();
+        $data = Role::where('id', $id)->with('permissions')->first();
+
+        $data->selected_permission_list = $data->permissions->pluck('name');
+
+        return $data;
     }
     public function update($request, $id)
     {
+        // Validate the request data
+        $validatedData = $request->validate([
+            'name' => 'required|string|max:255',
+            'permissions' => 'array',
+            'permissions.*' => 'string',
+        ]);
+        // Find the role by ID
+        $role = Role::findOrFail($id);
 
-        $data = Role::where('id', $id)->first();
-        $data->name = $request->name;
-        $data->update();
+        // Update the role name
+        $role->name = $validatedData['name'];
+        $role->save();
+        if (isset($validatedData['permissions'])) {
+            $role->syncPermissions($validatedData['permissions']);
+        }
+
+        return response()->json(['message' => 'Role and permissions updated successfully']);
     }
     public function destroy($id)
     {
-       return Role::where('id', $id)->delete();
+        return Role::where('id', $id)->delete();
+    }
+    public function show($id)
+    {
+        $data = Role::where('id', $id)->first();
+        $data->load('permissions');
+        return $data;
     }
 }

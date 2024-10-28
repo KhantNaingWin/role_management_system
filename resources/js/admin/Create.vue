@@ -1,30 +1,26 @@
 <template>
     <div
         x-data="{ sidebarOpen: false }"
-        class="flex h-screen bg-gray-200 font-roboto"
+        class="flex h-screen bg-gray-100 font-roboto"
     >
-        <div
-            x-cloak
-            class="fixed inset-0 z-20 transition-opacity bg-black opacity-50 lg:hidden"
-        ></div>
         <Sidebar />
         <div class="flex-1 flex flex-col overflow-hidden">
-            <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-200">
+            <main class="flex-1 overflow-x-hidden overflow-y-auto">
                 <div class="container mx-auto px-6 py-8">
                     <div class="mt-8">
                         <div class="mt-6">
                             <div
                                 class="sm:-mx-8 px-4 sm:px-8 py-4 overflow-x-auto"
                             >
-                                <!-- message button  -->
+                                <!-- Toast Notification -->
                                 <div
                                     v-if="messageStatus"
                                     id="toast-success"
-                                    class="flex content-center mx-auto items-center w-full max-w-xs p-4 mb-4 text-gray-500 bg-white rounded-lg shadow dark:text-gray-400 dark:bg-gray-800"
+                                    class="flex items-center w-full max-w-xs p-4 mb-4 text-gray-900 bg-green-100 rounded-lg shadow"
                                     role="alert"
                                 >
                                     <div
-                                        class="inline-flex items-center justify-center flex-shrink-0 w-8 h-8 text-green-500 bg-green-100 rounded-lg dark:bg-green-800 dark:text-green-200"
+                                        class="inline-flex items-center justify-center w-8 h-8 text-green-500 bg-green-200 rounded-lg"
                                     >
                                         <svg
                                             class="w-5 h-5"
@@ -37,123 +33,119 @@
                                                 d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 8.207-4 4a1 1 0 0 1-1.414 0l-2-2a1 1 0 0 1 1.414-1.414L9 10.586l3.293-3.293a1 1 0 0 1 1.414 1.414Z"
                                             />
                                         </svg>
-                                        <span class="sr-only">Check icon</span>
                                     </div>
-                                    <div class="ms-3 text-sm font-normal">
+                                    <div class="ml-3 text-sm font-medium">
                                         {{ message }}
                                     </div>
                                     <button
+                                        @click="messageStatus = false"
                                         type="button"
-                                        class="ms-auto -mx-1.5 -my-1.5 bg-white text-gray-400 hover:text-gray-900 rounded-lg focus:ring-2 focus:ring-gray-300 p-1.5 hover:bg-gray-100 inline-flex items-center justify-center h-8 w-8 dark:text-gray-500 dark:hover:text-white dark:bg-gray-800 dark:hover:bg-gray-700"
-                                        data-dismiss-target="#toast-success"
+                                        class="ml-auto text-gray-500 hover:text-gray-700"
                                         aria-label="Close"
                                     >
                                         <span class="sr-only">Close</span>
                                         <svg
-                                            class="w-3 h-3"
-                                            aria-hidden="true"
+                                            class="w-4 h-4"
                                             xmlns="http://www.w3.org/2000/svg"
                                             fill="none"
                                             viewBox="0 0 14 14"
+                                            stroke="currentColor"
                                         >
                                             <path
-                                                stroke="currentColor"
                                                 stroke-linecap="round"
                                                 stroke-linejoin="round"
                                                 stroke-width="2"
-                                                d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"
+                                                d="M4 4l6 6m0-6L4 10"
                                             />
                                         </svg>
                                     </button>
                                 </div>
+
+                                <!-- Form for User Creation -->
                                 <div
-                                    class="flex justify-center min-w-full shadow rounded-lg overflow-hidden"
+                                    class="flex justify-center min-w-full shadow-lg rounded-lg overflow-hidden bg-white p-6"
                                 >
-                                    <div class="w-full max-w-xs">
+                                    <div class="w-full max-w-md">
                                         <form
                                             @submit.prevent="createNewUser"
-                                            class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4"
+                                            class="bg-white rounded px-8 pt-6 pb-8 mb-4 space-y-4"
                                         >
-                                            <div class="mb-4">
+                                            <div>
                                                 <label
-                                                    class="block text-gray-700 text-sm font-bold mb-2"
-                                                    for="username"
+                                                    class="block text-gray-700 text-sm font-medium mb-2"
                                                 >
                                                     Name
                                                 </label>
                                                 <input
-                                                    class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                                                    id="username"
+                                                    class="shadow appearance-none border border-gray-300 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-indigo-500"
                                                     type="text"
                                                     v-model="formData.name"
-                                                    placeholder="Username"
+                                                    placeholder="Enter your name"
                                                 />
                                             </div>
-                                            <div class="mb-4">
+                                            <div>
                                                 <label
-                                                    class="block text-gray-700 text-sm font-bold mb-2"
-                                                    for="username"
+                                                    class="block text-gray-700 text-sm font-medium mb-2"
                                                 >
                                                     Email
                                                 </label>
                                                 <input
-                                                    class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                                                    id="useremail"
+                                                    class="shadow appearance-none border border-gray-300 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-indigo-500"
                                                     type="email"
                                                     v-model="formData.email"
-                                                    placeholder="Useremail"
+                                                    placeholder="Enter your email"
                                                 />
                                             </div>
-                                            <div class="mb-6">
+                                            <div>
                                                 <label
-                                                    class="block text-gray-700 text-sm font-bold mb-2"
-                                                    for="password"
+                                                    class="block text-gray-700 text-sm font-medium mb-2"
                                                 >
                                                     Password
                                                 </label>
                                                 <input
-                                                    class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
-                                                    id="password"
+                                                    class="shadow appearance-none border border-gray-300 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-indigo-500"
                                                     type="password"
                                                     v-model="formData.password"
-                                                    placeholder="*****"
+                                                    placeholder="Enter your password"
                                                 />
-                                                <!-- <p
-                                                    class="text-red-500 text-xs italic"
-                                                >
-                                                    Please choose a password.
-                                                </p> -->
                                             </div>
-                                            <div class="">
-                                                <p>Roles</p>
-                                            </div>
-                                            <div
-                                                class="mb-6 grid grid-cols-2 gap-3"
-                                            >
-                                                <div
-                                                    v-for="role in role"
-                                                    :key="role.id"
+                                            <div>
+                                                <p
+                                                    class="text-gray-700 text-sm font-medium mb-2"
                                                 >
-                                                    <input
-                                                        type="radio"
-                                                        v-model="formData.role"
-                                                        :value="role.id"
-                                                    />
-                                                    <label
-                                                        for=""
-                                                        class="ms-2"
-                                                        >{{ role.name }}</label
+                                                    Roles
+                                                </p>
+                                                <div class="flex space-x-4">
+                                                    <div
+                                                        v-for="role in role"
+                                                        :key="role.id"
+                                                        class="flex items-center"
                                                     >
+                                                        <input
+                                                            type="radio"
+                                                            v-model="
+                                                                formData.role
+                                                            "
+                                                            :value="role.id"
+                                                            class="form-radio text-indigo-600"
+                                                        />
+                                                        <label
+                                                            class="ml-2 text-gray-600"
+                                                            >{{
+                                                                role.name
+                                                            }}</label
+                                                        >
+                                                    </div>
                                                 </div>
                                             </div>
                                             <div
                                                 class="flex items-center justify-between"
                                             >
                                                 <button
-                                                    class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                                                    class="bg-gradient-to-r from-indigo-500 to-blue-500 text-white font-bold py-2 px-4 rounded focus:outline-none hover:from-indigo-600 hover:to-blue-600"
                                                     type="submit"
                                                 >
-                                                    Create
+                                                    Create User
                                                 </button>
                                             </div>
                                         </form>
@@ -169,8 +161,7 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex/dist/vuex.cjs.js";
-import api from "../api/api";
+import { mapGetters } from "vuex";
 import Sidebar from "./Sidebar.vue";
 
 export default {
@@ -179,14 +170,15 @@ export default {
     },
     data() {
         return {
-            roles: [],
             formData: {
                 name: "",
                 email: "",
                 password: "",
+                role: [],
             },
-            message: "",
+            roles: [],
 
+            message: "",
             messageStatus: false,
         };
     },
@@ -195,14 +187,19 @@ export default {
         role() {
             return this.storeRoles;
         },
-        permission() {
-            return this.storePermission;
-        },
     },
     methods: {
         createNewUser() {
-            this.$store.dispatch("createUser", this.formData);
-            this.messageStatus = true;
+            this.$store
+                .dispatch("createUser", this.formData)
+                .then(() => {
+                    this.message = "User created successfully!";
+                    this.messageStatus = true;
+                    this.formData = { name: "", email: "", password: "" };
+                })
+                .catch((error) => {
+                    console.error("Error creating user:", error);
+                });
         },
         async fetchData() {
             this.messageStatus = false;
@@ -218,5 +215,3 @@ export default {
     },
 };
 </script>
-
-<style lang="scss" scoped></style>

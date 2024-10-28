@@ -1,20 +1,20 @@
 <template>
     <div
         x-cloak
-        class="fixed inset-y-0 left-0 z-30 w-64 overflow-y-auto transition duration-300 transform bg-gray-900 lg:translate-x-0 lg:static lg:inset-0"
+        class="fixed inset-y-0 left-0 z-30 w-64 overflow-y-auto transition-transform duration-300 transform bg-gradient-to-b from-gray-900 to-gray-800 lg:translate-x-0 lg:static lg:inset-0 shadow-lg"
     >
         <div class="flex items-center justify-center mt-8">
             <div class="flex items-center">
                 <svg
-                    class="w-12 h-12"
+                    class="w-12 h-12 text-blue-500"
                     viewBox="0 0 512 512"
                     fill="none"
                     xmlns="http://www.w3.org/2000/svg"
                 >
                     <path
                         d="M364.61 390.213C304.625 450.196 207.37 450.196 147.386 390.213C117.394 360.22 102.398 320.911 102.398 281.6C102.398 242.291 117.394 202.981 147.386 172.989C147.386 230.4 153.6 281.6 230.4 307.2C230.4 256 256 102.4 294.4 76.7999C320 128 334.618 142.997 364.608 172.989C394.601 202.981 409.597 242.291 409.597 281.6C409.597 320.911 394.601 360.22 364.61 390.213Z"
-                        fill="#4C51BF"
-                        stroke="#4C51BF"
+                        fill="currentColor"
+                        stroke="currentColor"
                         stroke-width="2"
                         stroke-linecap="round"
                         stroke-linejoin="round"
@@ -24,75 +24,83 @@
                         fill="white"
                     />
                 </svg>
-
-                <button @click="Profile" class="mx-2 text-2xl font-semibold text-white"
-                    >Profile</button
+                <button
+                    @click="Profile"
+                    class="ml-2 text-2xl font-semibold text-white"
                 >
+                    Profile
+                </button>
             </div>
         </div>
 
         <nav class="mt-10">
             <a
-            @click="userList"
-                class="flex items-center px-6 py-2 mt-4 text-gray-500 hover:bg-gray-700 hover:bg-opacity-25 hover:text-gray-100"
+                @click="userList"
+                class="flex items-center px-6 py-3 mt-4 text-gray-300 transition-colors duration-200 transform hover:bg-blue-600 hover:text-white rounded-lg"
             >
-            <i class="fa-solid fa-users"></i>
-
-                <span class="mx-3">Users</span>
+                <i class="fa-solid fa-users text-blue-400"></i>
+                <span class="ml-3">Users</span>
             </a>
 
             <a
-            @click="postPage"
-                class="flex items-center px-6 py-2 mt-4 text-gray-500 hover:bg-gray-700 hover:bg-opacity-25 hover:text-gray-100"
+                @click="postPage"
+                class="flex items-center px-6 py-3 mt-4 text-gray-300 transition-colors duration-200 transform hover:bg-green-600 hover:text-white rounded-lg"
             >
-            <i class="fa-solid fa-newspaper"></i>
-
-                <span class="mx-3">Post</span>
+                <i class="fa-solid fa-newspaper text-green-400"></i>
+                <span class="ml-3">Post</span>
             </a>
 
             <a
-           @click="rolePage"
-                class="flex items-center px-6 py-2 mt-4 text-gray-500 hover:bg-gray-700 hover:bg-opacity-25 hover:text-gray-100"
+                v-if="currentRole ? currentRole[0]?.name === 'admin' : ''"
+                @click="rolePage"
+                class="flex items-center px-6 py-3 mt-4 text-gray-300 transition-colors duration-200 transform hover:bg-purple-600 hover:text-white rounded-lg"
             >
-            <i class="fa-solid fa-shield-halved"></i>
-
-                <span class="mx-3">Roles</span>
+                <i class="fa-solid fa-shield-halved text-purple-400"></i>
+                <span class="ml-3">Roles</span>
             </a>
+
             <button
                 @click="logoutData"
-                class="flex w-48 mx-auto items-center px-6 py-2 mt-4 bg-red-500 hover:bg-red-700 rounded hover:text-gray-100"
+                class="flex items-center px-6 py-3 mt-8 w-full bg-red-600 text-white rounded-lg transition duration-200 transform hover:bg-red-700 shadow-lg"
             >
                 <i class="fa-solid fa-right-from-bracket"></i>
-
-                <span class="mx-auto">Logout</span>
+                <span class="ml-3">Logout</span>
             </button>
         </nav>
     </div>
 </template>
 
 <script>
+import { mapGetters } from "vuex";
 export default {
+    data() {
+        return {
+            currentRole: null,
+        }
+    },
+    computed: {
+        ...mapGetters(["authRole"]),
+    },
     methods: {
         logoutData() {
             this.$store.dispatch("logout");
-            this.$router.push('/login')
+            this.$router.push("/login");
         },
-        postPage(){
-            console.log('post page');
-
-            this.$router.push('/admin/post/create')
+        postPage() {
+            this.$router.push("/admin/post/create");
         },
-        userList(){
-            this.$router.push('/admin/home')
+        userList() {
+            this.$router.push("/admin/home");
         },
-        rolePage(){
-            this.$router.push('/admin/role')
-
+        rolePage() {
+            this.$router.push("/admin/role");
         },
-        Profile(){
-            this.$router.push('/admin/profile')
-        }
-
+        Profile() {
+            this.$router.push("/admin/profile");
+        },
+    },
+    mounted() {
+        this.$store.dispatch("adminAuthProfile");
     },
 };
 </script>

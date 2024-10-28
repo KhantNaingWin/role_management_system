@@ -1,6 +1,7 @@
 import { createStore } from "vuex";
 import api from "../api/api";
 
+
 export default createStore({
     state: {
         userData: [],
@@ -9,7 +10,11 @@ export default createStore({
         roles: [],
         permissions: [],
         userposts: [],
-        profileData : []
+        profileData: {},
+        editUser: [],
+        updateSuccess: "",
+        authPermission: [],
+        authRole: null,
     },
     getters: {
         isAuthenticated: (state) => !!state.token,
@@ -19,6 +24,11 @@ export default createStore({
         storeRoles: (state) => state.roles,
         userposts: (state) => state.userposts,
         profileData: (state) => state.profileData,
+        storePermissions: (state) => state.permissions,
+        storeEditUser: (state) => state.editUser,
+        updateSuccess: (state) => state.updateSuccess,
+        authPermission: (state) => state.authPermission,
+        authRole: (state) => state.authRole,
     },
     mutations: {
         setToken(state, token) {
@@ -46,6 +56,31 @@ export default createStore({
                 (user) => user.id !== userId
             );
         },
+        //editUser
+        editUser(state, user) {
+            state.editUser = user;
+
+        },
+        //updateUser
+        updateUser(state, data) {
+            state.updateSuccess = data
+
+        },
+        // Role_Change
+        Role_Change(state, data) {
+            const index = state.userData.findIndex(user => user.id === data.user.id);
+            if (index !== -1) {
+                // Update the user's roles in the userData array
+                state.userData[index].roles = data.user.roles; // Assuming `data.roles` contains the updated roles
+
+                // Make sure this is reactive
+                state.userData = [...state.userData]; // Trigger Vue's reactivity system
+            }
+
+
+
+        },
+
 
         updatePost(state, updatedPost) {
             const index = state.postData.findIndex(
@@ -63,11 +98,14 @@ export default createStore({
         setPosts(state, posts) {
             state.postData = posts;
         },
+        addPost(state, newPost) {
+            state.postData.push(newPost); // Add the new post to the state array
+        },
         getRoles(state, getRoles) {
             state.roles = getRoles;
         },
         newRoles(state, newRole) {
-            state.roles = [...newRole];
+            state.roles.push(newRole);
         },
         updateRole(state, updatedRole) {
             const index = state.roles.findIndex(
@@ -86,9 +124,21 @@ export default createStore({
         },
         //profile
         profileData(state, profileData) {
-            state.profileData = profileData;
-            // console.log(state.profileData);
+            state.authRole = profileData.user.roles
 
+            state.profileData = profileData;
+            state.authPermission = profileData.permissions;
+
+        },
+        // updateprofileData
+        updateprofileData(state, data) {
+            state.profileData = data
+
+
+        },
+        // permissionlists
+        permissionlists(state, data) {
+            state.permissions = data
         }
     },
     actions: {
@@ -117,10 +167,36 @@ export default createStore({
                 console.error(error);
             }
         },
+        //edit user
+        async fetchEditUser({ commit }, userId) {
+            const response = await api.get(`/api/admin/${userId}/edit`);
+            commit("editUser", response.data);
+        },
+        //update user
+        async updateUser({ commit }, updatedUser) {
+            try {
+                const response = await api.put(`/api/admin/${updatedUser.id}`, updatedUser);
+                commit("updateUser", response.data); // Assuming response.data contains the updated user
+            } catch (error) {
+                console.error(error);
+            }
+        },
+        //delete user
         async deleteUser({ commit }, userId) {
             try {
                 await api.delete(`/api/admin/${userId}`);
                 commit("deleteUser", userId); // Remove user from the store
+            } catch (error) {
+                console.error(error);
+            }
+        },
+        //role change
+        async updateUserRole({ commit }, data) {
+            try {
+                const response = await api.patch(`/api/users/rolechange/${data.userId}`, {
+                    role_id: data.newRole,
+                });
+                commit("Role_Change", response.data); // Assuming response.data contains the updated user
             } catch (error) {
                 console.error(error);
             }
@@ -148,8 +224,10 @@ export default createStore({
             const response = await api.get("api/role");
             commit("getRoles", response.data);
         },
+        //new role create
         async newRoles({ commit }, newRole) {
             const response = await api.post("api/role", newRole);
+
             commit("newRoles", response.data);
         },
         async updateRoles({ commit }, updatedRole) {
@@ -163,6 +241,14 @@ export default createStore({
             await api.delete(`api/role/${roleId}`);
             commit("deleteRole", roleId); // Remove role from the store
         },
+        //permissionlists
+
+        async permissionlists({ commit }, id) {
+            const res = await api.get(`/api/role/${id}`);
+            commit('permissionlists', res.data.permissions)
+
+        },
+
 
         //user
         async userpostlists({ commit }) {
@@ -173,14 +259,22 @@ export default createStore({
         async adminAuthProfile({ commit }) {
             try {
                 const response = await api.get("api/login/profile");
-                console.log(response.data);
-
-            commit("profileData", response.data);
+                commit("profileData", response.data);
             } catch (error) {
                 console.error(error);
 
             }
+        },
+        //saveProfile
+        async saveProfile({ commit }, profileData) {
+            await api.put('api/authuser/update', profileData).then((response) => {
+                commit("updateprofileData", response.data);
+            }).catch((error) => {
+                console.error(error.response.data);
+            });
+
         }
+
     },
     modules: {},
 });

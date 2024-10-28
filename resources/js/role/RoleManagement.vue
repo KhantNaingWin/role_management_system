@@ -1,7 +1,7 @@
 <template>
     <div
         x-data="{ sidebarOpen: false }"
-        class="flex h-screen bg-gray-200 font-roboto"
+        class="flex h-screen bg-gray-100 font-roboto"
     >
         <!-- Overlay for mobile screens -->
         <div
@@ -15,69 +15,116 @@
         <Sidebar />
 
         <!-- Main Content -->
-        <div class="flex-1 flex flex-col overflow-hidden p-6">
+        <div class="flex-1 flex flex-col overflow-auto p-6">
             <!-- Form Section -->
-            <div class="mb-6">
-                <form @submit.prevent="newRole" class="flex gap-2">
-                    <input
-                        type="text"
-                        placeholder="Create new role"
-                        v-model="role.name"
-                        class="flex-1 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    />
-                    <button
-                        type="submit"
-                        class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
-                    >
-                        Create
-                    </button>
+            <div class="mb-8">
+                <form
+                    @submit.prevent="newRole"
+                    class="bg-white p-6 rounded-lg shadow-md"
+                >
+                    <h2 class="text-2xl font-semibold mb-4 text-gray-800">
+                        Create New Role
+                    </h2>
+                    <div class="flex gap-2 mb-4">
+                        <input
+                            type="text"
+                            placeholder="Enter role name"
+                            v-model="role.name"
+                            class="flex-1 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        />
+                        <button
+                            type="submit"
+                            class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-500"
+                        >
+                            Create
+                        </button>
+                    </div>
+                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                        <div
+                            v-for="permission in Permissions"
+                            :key="permission.id"
+                            class="flex items-center space-x-2"
+                        >
+                            <input
+                                v-model="role.permissions"
+                                type="checkbox"
+                                :value="permission.name"
+                                :id="permission.id"
+                                class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                            />
+                            <label :for="permission.id" class="text-gray-700">{{
+                                permission.name
+                            }}</label>
+                        </div>
+                    </div>
                 </form>
             </div>
 
             <!-- Role List Section -->
-            <div>
-                <h3 class="text-xl font-semibold mb-4">Role List</h3>
-                <ul class="space-y-2">
-                    <li
+            <div class="flex-1 overflow-auto">
+                <h3 class="text-2xl font-semibold mb-6 text-gray-800">
+                    Role List
+                </h3>
+                <div class="space-y-4">
+                    <div
                         v-for="role in roles"
                         :key="role.id"
-                        class="flex items-center justify-between p-4 bg-white rounded-md shadow-sm"
+                        class="flex items-center justify-between p-5 bg-white rounded-lg shadow-sm"
                     >
-                        <span v-if="editRoleId !== role.id">{{
-                            role.name
-                        }}</span>
-                        <input
-                            v-if="editRoleId === role.id"
-                            type="text"
-                            v-model="role.name"
-                            @keyup.enter="saveRole(role)"
-                            @blur="editRoleId = null"
-                            class="flex-1 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        />
-                        <div class="flex space-x-2">
+                        <div>
+                            <span
+                                v-if="editRoleId !== role.id"
+                                class="text-lg font-medium text-gray-800"
+                                >{{ role.name }}</span
+                            >
+                        </div>
+                        <div class="flex space-x-4">
+                            <button
+                                @click="permission(role.id)"
+                                class="text-green-600 hover:text-green-700 flex items-center"
+                            >
+                                <i class="fas fa-lock mr-2"></i> Permissions
+                            </button>
                             <button
                                 @click="editRole(role.id)"
-                                class="text-blue-500 hover:text-blue-600 flex items-center"
+                                class="text-blue-600 hover:text-blue-700 flex items-center"
                             >
-                                <i class="fas fa-edit mr-1"></i> Edit
+                                <i class="fas fa-edit mr-2"></i> Edit
                             </button>
                             <button
                                 @click="deleteRole(role.id)"
-                                class="text-red-500 hover:text-red-600 flex items-center"
+                                class="text-red-600 hover:text-red-700 flex items-center"
                             >
-                                <i class="fas fa-trash-alt mr-1"></i> Delete
+                                <i class="fas fa-trash-alt mr-2"></i> Delete
                             </button>
                         </div>
-                    </li>
-                </ul>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-lg my-1 shadow-md">
+                    <h3 class="text-2xl font-semibold mb-4 text-gray-800">
+                        Permissions List
+                    </h3>
+                    <div class="flex flex-wrap gap-2">
+                        <span
+                            v-for="p in permissionslists"
+                            :key="p.id"
+                            class="bg-blue-100 text-blue-800 text-sm font-medium px-3 py-1 rounded-full"
+                        >
+                            {{ p.name }}
+                        </span>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </template>
 
+
 <script>
-import { mapActions, mapGetters } from "vuex/dist/vuex.cjs.js";
+import { mapGetters } from "vuex/dist/vuex.cjs.js";
 import Sidebar from "../admin/Sidebar.vue";
+import api from "../api/api";
 
 export default {
     components: {
@@ -87,48 +134,71 @@ export default {
         return {
             role: {
                 name: "",
+                permissions: [],
             },
-            editRoleId: null, // Store the ID of the role being edited
+            editRoleId: null,
+            Permissions: [],
+            rolepermission: [],
+            permissionslists: [],
+            editrole: [],
+            roles: [],
         };
     },
     computed: {
-        ...mapGetters(["storeRoles"]),
-        roles() {
-            return this.storeRoles;
+        ...mapGetters(["storeRoles", "storePermissions"]),
+    },
+    watch: {
+        storeRoles: {
+            immediate: true,
+            handler(newVal) {
+                this.roles = newVal;
+            },
+        },
+        storePermissions: {
+            immediate: true,
+            handler(newVal) {
+                this.permissionslists = newVal;
+            },
         },
     },
     methods: {
         newRole() {
-                this.newRoles
-    if (this.role.name.trim()) {
-        // Push the new role object to the roles array
-        this.roles.push({ ...this.role });
-        // Optionally, update the Vuex store with the new roles array
-        this.$store.dispatch("newRoles",this.role);
+            
 
-        // Clear the input field after adding the role
-        this.role.name = "";
+    if (this.role.name.trim()) {
+        // Use the Vuex store to add the new role
+        this.$store.dispatch("newRoles", { ...this.role }).then(() => {
+            // Clear the form after adding the new role
+            this.role.name = "";
+            this.role.permissions = [];
+        });
     }
 },
-        editRole(roleId) {
-            this.editRoleId = roleId; // Set the role ID to edit
+        async permission(roleid) {
+            await this.$store.dispatch("permissionlists", roleid);
+        },
+        async editRole(roleId) {
+            this.$router.push(`/edit/role/${roleId}`);
         },
         saveRole(role) {
-            this.$store.dispatch("updateRoles", role); // Dispatch an action to update the role in the store
-            this.editRoleId = null; // Clear the edit mode
+            this.editRoleId = null;
         },
         deleteRole(roleId) {
-            this.roles.filter((role) => {
-                if (role.id === roleId) {
-                    this.roles.splice(this.roles.indexOf(role), 1);
-                }
-            }); // Remove the role from the list
-
-            this.$store.dispatch("deleteRole", roleId); // Dispatch an action to delete the role
+            this.roles = this.roles.filter((role) => role.id !== roleId);
+            this.$store.dispatch("deleteRole", roleId);
+        },
+        async fetchData() {
+            try {
+                const response = await api.get("/api/permission");
+                this.Permissions = response.data;
+            } catch (error) {
+                console.log(error);
+            }
         },
     },
     mounted() {
-        this.$store.dispatch("getRoles"); // Fetch roles when the component is mounted
+        this.fetchData();
+        this.$store.dispatch("getRoles");
     },
 };
 </script>

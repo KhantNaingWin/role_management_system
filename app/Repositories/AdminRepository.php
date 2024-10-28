@@ -37,22 +37,14 @@ class AdminRepository implements AdminInterface
     }
     public function update($request, $id)
     {
-    $data = User::find($id);
+    $data = User::findOrFail($id);
     $data->name = $request->name;
     $data->email = $request->email;
 
     if (!empty($request->password)) {
         $data->password = Hash::make($request->password);
     }
-
-    if ($request->roles) {
-        $data->syncRoles($request->roles);
-    } else {
-        $data->roles()->detach();
-    }
-
-    // Save the changes
-    $data->update();
+    return $data->update();
 }
     public function destroy($id)
 

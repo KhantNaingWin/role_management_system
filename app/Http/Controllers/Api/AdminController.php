@@ -68,7 +68,6 @@ class AdminController extends Controller
     {
         if(auth()->user()->hasPermissionTo("read")) {
             $user = $this->adminInterface->edit($id);
-        $user->load('roles');
         if ($user) {
             return response()->json([
                 $user,
@@ -92,10 +91,12 @@ class AdminController extends Controller
         if(auth()->user()->hasPermissionTo('update')) {
 
         $data = $this->adminInterface->update($request, $id);
+       if($data) {
         return response()->json([
             'message' => 'User updated successfully',
             'data' => $data
         ], 200);
+       }
         }
         return response()->json([
             'message'=> 'no permission'

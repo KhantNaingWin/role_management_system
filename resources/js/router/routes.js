@@ -10,6 +10,7 @@ import RoleManagement from "../role/RoleManagement.vue";
 import Edit from "../admin/Edit.vue";
 import Create from "../admin/Create.vue";
 import Profile from "../components/Profile.vue";
+import EditRole from "../role/EditRole.vue";
 
 export const routes = [
     {
@@ -68,6 +69,15 @@ export const routes = [
         }
     },
     {
+        path: '/edit/role/:id',
+        name: 'edit-role',
+        props: true,
+        component: EditRole,
+        beforeEnter: async (to, from, next) => {
+            await roleBasedAuth('admin', next);
+        }
+    },
+    {
         path: '/admin/profile',
         name: 'admin-profile',
         component: Profile,
@@ -83,14 +93,14 @@ export const routes = [
             await roleBasedAuth('user', next);
         }
     },
-    {
-        path: '/editor/home',
-        name: 'editor-home',
-        component: AdminHome,
-        beforeEnter: async (to, from, next) => {
-            await roleBasedAuth('editor', next);
-        }
-    },
+    // {
+    //     path: '/editor/home',
+    //     name: 'editor-home',
+    //     component: AdminHome,
+    //     beforeEnter: async (to, from, next) => {
+    //         await roleBasedAuth('editor', next);
+    //     }
+    // },
 ];
 
 // Centralized authentication function
@@ -103,47 +113,37 @@ async function roleBasedAuth(requiredRole, next) {
     }
 
     try {
-        // Verify the user's role by making an API call
-        const response = await api.get('/api/users', {
-            headers: {
-                Authorization: `Bearer ${token}`, // Use the token in the request headers
-            },
-        });
 
+        const response = await api.get('/api/login/profile'
 
-        // Extract roles from the response
-        const roles = response.data[1].flatMap(user => user.roles.map(role => role.name));
+        );
+
+        const roles = response.data.user?.roles.map(role => role.name);
         if (roles.includes(requiredRole)) {
-            // Allow navigation if the required role matches
+
             return next();
         } else {
-            // Redirect based on role if it doesn't match the required role
-            const userRole = roles; // Get the first role (you can change this logic as needed)
+
+            const userRole = roles;
             return redirectToRoleHome(userRole, next);
         }
 
     } catch (error) {
-        console.errosr(error);
-        // Redirect to login if there is an error
+        console.error(error);
+
         next({ name: 'login' });
     }
 }
 
-// Helper function to redirect to the appropriate home route based on role
+
 function redirectToRoleHome(role, next) {
     switch (role) {
-        case 'admin':
-            next({ name: 'admin-home' });
-            break;
         case 'user':
             next({ name: 'user-home' });
             break;
-        case 'editor':
-            next({ name: 'editor-home' });
-            break;
         default:
             // Redirect to a default dashboard or home page if role is unknown
-            next({ name: 'dashboard' });
+            next();
             break;
     }
 }

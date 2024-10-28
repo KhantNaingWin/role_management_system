@@ -1,22 +1,16 @@
 <template>
-    <div class="flex justify-center items-center h-screen bg-gray-200 px-6">
-        <div class="p-6 max-w-sm w-full bg-white shadow-md rounded-md">
+    <div class="flex justify-center items-center min-h-screen bg-white px-6">
+        <div class="p-8 max-w-sm w-full bg-white shadow-lg rounded-lg transform transition duration-300 hover:shadow-xl">
             <div
-                v-if="this.errorStatus"
-                class="alert alert-warning alert-dismissible fade show"
+                v-if="errorStatus"
+                class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded-md mb-4"
                 role="alert"
             >
-                <small class="text-red-500">{{ errorMessage }}</small>
-                <button
-                    type="button"
-                    class="btn-close"
-                    data-bs-dismiss="alert"
-                    aria-label="Close"
-                ></button>
+                <small>{{ errorMessage }}</small>
             </div>
-            <div class="flex justify-center items-center">
+            <div class="flex justify-center items-center mb-6">
                 <svg
-                    class="h-10 w-10"
+                    class="h-12 w-12 text-indigo-600"
                     viewBox="0 0 512 512"
                     fill="none"
                     xmlns="http://www.w3.org/2000/svg"
@@ -36,59 +30,53 @@
                 </svg>
             </div>
 
-            <form class="mt-4" @submit.prevent="loginUserData">
+            <form class="mt-6" @submit.prevent="loginUserData">
                 <label class="block">
-                    <span class="text-gray-700 text-sm">Email</span>
+                    <span class="text-gray-700 text-sm font-medium">Email</span>
                     <input
                         v-model="formData.email"
                         type="email"
-                        class="form-input mt-1 block w-full rounded-md focus:border-indigo-600"
+                        class="form-input mt-2 block w-full rounded-md border-2 border-gray-300 focus:border-indigo-600 focus:ring-indigo-600 transition duration-200"
                     />
                 </label>
 
-                <label class="block mt-3">
-                    <span class="text-gray-700 text-sm">Password</span>
+                <label class="block mt-4">
+                    <span class="text-gray-700 text-sm font-medium">Password</span>
                     <input
                         v-model="formData.password"
                         type="password"
-                        class="form-input mt-1 block w-full rounded-md focus:border-indigo-600"
+                        class="form-input mt-2 block w-full rounded-md border-2 border-gray-300 focus:border-indigo-600 focus:ring-indigo-600 transition duration-200"
                     />
                 </label>
 
-                <div class="flex justify-between items-center mt-4">
-                    <div>
-                        <label class="inline-flex items-center">
-                            <input
-                                type="checkbox"
-                                class="form-checkbox text-indigo-600"
-                            />
-                            <span class="mx-2 text-gray-600 text-sm"
-                                >Remember me</span
-                            >
-                        </label>
-                    </div>
+                <div class="flex justify-between items-center mt-6">
+                    <label class="inline-flex items-center">
+                        <input
+                            type="checkbox"
+                            class="form-checkbox text-indigo-600 rounded"
+                        />
+                        <span class="ml-2 text-gray-600 text-sm">Remember me</span>
+                    </label>
 
-                    <div>
-                        <a
-                            class="block text-sm fontme text-indigo-700 hover:underline"
-                            href="#"
-                            >Forgot your password?</a
-                        >
-                    </div>
-                </div>
-
-                <div class="mt-6">
-                    <button
-                        type="submit"
-                        class="py-2 px-4 text-center bg-indigo-600 rounded-md w-full text-white text-sm hover:bg-indigo-500"
+                    <a
+                        class="text-sm text-indigo-600 hover:underline"
+                        href="#"
                     >
-                        Sign in
-                    </button>
+                        Forgot password?
+                    </a>
                 </div>
+
+                <button
+                    type="submit"
+                    class="mt-6 w-full py-2 px-4 bg-indigo-600 hover:bg-indigo-500 text-white rounded-md shadow transition duration-200 transform hover:scale-105"
+                >
+                    Sign in
+                </button>
             </form>
         </div>
     </div>
 </template>
+
 
 <script>
 import { mapGetters } from "vuex";
@@ -101,7 +89,6 @@ export default {
                 name: "",
                 email: "",
             },
-            loginStatus: false,
             errorStatus: false,
         };
     },
@@ -119,36 +106,26 @@ export default {
                 .then((response) => {
                     const token = response.data.token;
                     const userData = response.data.user;
-                    // console.log(userData,token);
 
-                    if (token) {
-                        this.loginStatus = true;
                         this.$store.dispatch("login", token);
-                        // console.log(this.userData);
 
-                        let role = userData.roles[0]?.name;
-                            if(role === 'admin'){
-                                this.$router.push('/admin/home')
-                            }else if(
-                                role === 'user'
-                            ){
-                                   this.$router.push('/user/home')
+                        const role = userData.roles[0]?.name;
+                       switch (role) {
+                        case "user":
+                            this.$router.replace({ name: "user-home" });
+                            break;
+                        default:
+                        this.$router.replace({ name: "admin-home" });
+                            break;
+                       }
 
-                            }else if (role === 'editor') {
-                                    this.$router.push('/editor/home')
-
-                            }
-
-
-                    }
                 })
                 .catch((error) => {
-                    console.info(error)
+                    console.info(error);
                     this.errorStatus = true;
                     this.errorMessage = error;
                     this.formData = {};
                 });
-
         },
     },
     mounted() {

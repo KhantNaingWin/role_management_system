@@ -40,7 +40,8 @@ class RoleController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $role = $this->roleInterface->show($id);
+        return response()->json($role,200);
     }
 
     /**
@@ -69,4 +70,5 @@ class RoleController extends Controller
         $role = $this->roleInterface->destroy($id);
         return response()->json($role,200);
     }
+    
 }

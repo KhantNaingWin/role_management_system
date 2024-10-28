@@ -47,6 +47,8 @@ class PostController extends Controller
         'post' => $post
     ], 201);
        }
+       return response()->json(["message"=> "no permission"]);
+
     }
 
     /**
@@ -62,8 +64,12 @@ class PostController extends Controller
      */
     public function edit(string $id)
     {
-        $post = $this->postInterface->edit($id);
+        if(auth()->user()->can('post_read')){
+            $post = $this->postInterface->edit($id);
         return response()->json($post);
+        }
+        return response()->json(["message"=> "no permission"]);
+
     }
 
     /**
@@ -71,11 +77,15 @@ class PostController extends Controller
      */
     public function update(Request $request, string $id)
     {
+       if(auth()->user()->can('update_post')){
         $post = $this->postInterface->update($request, $id);
         return response()->json([
             'message' => 'Post updated successfully',
             $post
         ], 200);
+       }
+       return response()->json(["message"=> "no permission"]);
+
     }
 
     /**
@@ -83,15 +93,23 @@ class PostController extends Controller
      */
     public function destroy(string $id)
     {
-        $this->postInterface->destroy($id);
+        if(auth()->user()->can('delete_post')){
+            $this->postInterface->destroy($id);
         return response()->json(['message' => 'Post deleted successfully']);
+        }
+        return response()->json(["message"=> "no permission"]);
+
     }
     public function postLists(){
-        $posts = $this->postInterface->PostLists();
+        if(auth()->user()->can('post_read')){
+            $posts = $this->postInterface->PostLists();
         if($posts){
             return response()->json($posts);
         }else{
             return response()->json(["message"=> "no post data"],404);
         }
+        }
+        return response()->json(["message"=> "no permission"]);
+
     }
 }
