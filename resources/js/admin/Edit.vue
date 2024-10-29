@@ -166,8 +166,7 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex/dist/vuex.cjs.js";
-import api from "../api/api";
+import { mapGetters } from 'vuex';
 import Sidebar from "./Sidebar.vue";
 export default {
     components: {
@@ -186,7 +185,7 @@ export default {
         };
     },
     computed: {
-        ...mapGetters(["storeEditUser","updateSuccess"]),
+       ...mapGetters(["storeEditUser","updateSuccess"]),
     },
     watch: {
         storeEditUser(newValue) {

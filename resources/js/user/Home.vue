@@ -2,7 +2,7 @@
     <Navbar />
 
     <div class="grid grid-cols-4 gap-4">
-        <div v-for="post in userposts" :key="post.id" class="max-w-sm rounded overflow-hidden shadow-lg">
+        <div v-for="post in userposts" :key="post.id" class="max-w-sm rounded overflow-hidden mt-5 shadow-lg">
         <img
             class="w-full"
             src="../../css/images.jpg"
@@ -33,7 +33,7 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex/dist/vuex.cjs.js";
+import { mapGetters } from "vuex";
 import Navbar from "../HomeNav.vue";
 
 export default {
@@ -41,17 +41,11 @@ export default {
         Navbar,
     },
     computed: { ...mapGetters(["userposts"]) },
-
-    data() {
-        return {
-            postlists: [],
-        };
-    },
     // watch: {
-    //    if(userposts){
-    //     this.postlists = userposts;
-    //    }
+    //     userposts() {
+    //         console.log(this.userposts);
     //     },
+    // },
     mounted() {
         this.$store.dispatch("userpostlists");
     },

@@ -5,7 +5,6 @@ import api from "../api/api";
 export default createStore({
     state: {
         userData: [],
-        token: localStorage.getItem("token"),
         postData: [],
         roles: [],
         permissions: [],
@@ -17,8 +16,6 @@ export default createStore({
         authRole: null,
     },
     getters: {
-        isAuthenticated: (state) => !!state.token,
-        storeToken: (state) => state.token,
         storeUserData: (state) => state.userData,
         storePostData: (state) => state.postData,
         storeRoles: (state) => state.roles,
@@ -31,14 +28,6 @@ export default createStore({
         authRole: (state) => state.authRole,
     },
     mutations: {
-        setToken(state, token) {
-            state.token = token;
-            localStorage.setItem("token", token);
-        },
-        clearToken(state) {
-            state.token = null;
-            localStorage.removeItem("token");
-        },
         getUserData(state, user) {
             state.userData = user;
         },
@@ -142,18 +131,14 @@ export default createStore({
         }
     },
     actions: {
-        login({ commit }, token) {
-            commit("setToken", token);
-        },
-        register({ commit }, token) {
-            commit("setToken", token);
-        },
-        logout({ commit }) {
-            commit("clearToken");
-        },
+        // },
         async getUserData({ commit }) {
             try {
-                const response = await api.get("api/admin");
+                const response = await api.get("api/admin", {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    }
+                });
                 commit("getUserData", response.data);
             } catch (error) {
                 console.error(error);
@@ -202,7 +187,13 @@ export default createStore({
             }
         },
         async fetchPosts({ commit }) {
-            const response = await api.get("/api/post");
+            const response = await api.get("/api/post"
+                , {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    }
+                }
+            );
             commit("setPosts", response.data);
         },
         async createPost({ commit }, newPost) {
@@ -221,7 +212,13 @@ export default createStore({
             commit("deletePost", postId); // Remove post from the store
         },
         async getRoles({ commit }) {
-            const response = await api.get("api/role");
+            const response = await api.get("api/role"
+                , {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    }
+                }
+            );
             commit("getRoles", response.data);
         },
         //new role create
@@ -252,13 +249,26 @@ export default createStore({
 
         //user
         async userpostlists({ commit }) {
-            const response = await api.get("api/posts");
+            const response = await api.get("api/posts",
+                {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    }
+                }
+            );
             commit("postlists", response.data);
         },
         //adminAuthProfile
         async adminAuthProfile({ commit }) {
+
             try {
-                const response = await api.get("api/login/profile");
+                const response = await api.get("api/login/profile", {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    }
+                });
+
+
                 commit("profileData", response.data);
             } catch (error) {
                 console.error(error);

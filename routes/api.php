@@ -16,7 +16,7 @@ Route::post('/register', [RegisteredUserController::class, 'store']);
 
 Route::post('/login', [AuthenticatedSessionController::class, 'login'])->name('login');
 Route::middleware('auth:api')->group(function () {
-    Route::post('/logout', [AuthenticatedSessionController::class, 'destroy']);
+    Route::post('/logout', [AuthenticatedSessionController::class, 'logout']);
     Route::resource('/admin', AdminController::class);
     Route::resource('/post', PostController::class);
     Route::resource('/role', RoleController::class);

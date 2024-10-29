@@ -35,6 +35,7 @@
 
         <nav class="mt-10">
             <a
+             v-if="permissions?.includes('read')"
                 @click="userList"
                 class="flex items-center px-6 py-3 mt-4 text-gray-300 transition-colors duration-200 transform hover:bg-blue-600 hover:text-white rounded-lg"
             >
@@ -43,6 +44,7 @@
             </a>
 
             <a
+                v-if="permissions?.includes('post_read')"
                 @click="postPage"
                 class="flex items-center px-6 py-3 mt-4 text-gray-300 transition-colors duration-200 transform hover:bg-green-600 hover:text-white rounded-lg"
             >
@@ -72,18 +74,40 @@
 
 <script>
 import { mapGetters } from "vuex";
+import api from "../api/api";
 export default {
     data() {
         return {
             currentRole: null,
-        }
+            permissions: null,
+        };
     },
     computed: {
-        ...mapGetters(["authRole"]),
+        ...mapGetters(["authRole", "authPermission"]),
+    },
+    watch: {
+        authRole(newVal) {
+            this.currentRole = newVal;
+        },
+        authPermission(newVal) {
+            this.permissions = newVal;
+        },
     },
     methods: {
-        logoutData() {
-            this.$store.dispatch("logout");
+        async logoutData() {
+            await api
+                .post("/api/logout", {
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem(
+                            "token"
+                        )}`,
+                    },
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
+            localStorage.removeItem("token");
+
             this.$router.push("/login");
         },
         postPage() {

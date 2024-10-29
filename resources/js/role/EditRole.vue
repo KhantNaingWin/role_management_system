@@ -132,6 +132,7 @@ export default {
                 .catch((error) => {
                     console.log(error);
                 });
+                this.$store.dispatch("adminAuthProfile");
         },
         async fetchData() {
             this.userId = this.$route.params.id;

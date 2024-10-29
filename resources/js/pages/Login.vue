@@ -79,7 +79,6 @@
 
 
 <script>
-import { mapGetters } from "vuex";
 import api from "../api/api";
 
 export default {
@@ -92,9 +91,6 @@ export default {
             errorStatus: false,
         };
     },
-    computed: {
-        ...mapGetters(["storeToken"]),
-    },
     methods: {
         // this is login user data
 
@@ -105,11 +101,14 @@ export default {
                 .post("/api/login", this.formData)
                 .then((response) => {
                     const token = response.data.token;
+                    if(token!==null){
+                        localStorage.setItem("token", token);
+                    }
                     const userData = response.data.user;
-
-                        this.$store.dispatch("login", token);
-
+                        window.axios.defaults.headers.common['Authorization'] = 'Bearer '+ localStorage.getItem("token");
                         const role = userData.roles[0]?.name;
+                        console.log(role);
+
                        switch (role) {
                         case "user":
                             this.$router.replace({ name: "user-home" });
@@ -130,12 +129,12 @@ export default {
     },
     mounted() {
         this.formData = {};
-        if (localStorage.getItem("token")) {
-            this.loginStatus = true;
-        } else {
-            this.loginStatus = false;
-            this.$router.push("/login");
-        }
+        // if (localStorage.getItem("token")) {
+        //     this.loginStatus = true;
+        // } else {
+        //     this.loginStatus = false;
+        //     this.$router.push("/login");
+        // }
     },
 };
 </script>

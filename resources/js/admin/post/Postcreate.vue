@@ -109,7 +109,7 @@ export default {
         };
     },
     computed: {
-        ...mapGetters(["storePostData", "storeToken","authPermission"]),
+        ...mapGetters(["storePostData","authPermission"]),
         postData() {
             return this.storePostData; // Use the store getter to access postData
         },
@@ -156,9 +156,6 @@ export default {
 
         this.$store.dispatch("fetchPosts");
         this.$store.dispatch('adminAuthProfile');
-        if (this.storeToken == null) {
-            this.$router.push("/login");
-        }
     },
 };
 </script>

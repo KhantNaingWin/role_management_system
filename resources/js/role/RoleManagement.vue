@@ -122,7 +122,7 @@
 
 
 <script>
-import { mapGetters } from "vuex/dist/vuex.cjs.js";
+import { mapGetters } from "vuex";
 import Sidebar from "../admin/Sidebar.vue";
 import api from "../api/api";
 
@@ -163,7 +163,7 @@ export default {
     },
     methods: {
         newRole() {
-            
+
 
     if (this.role.name.trim()) {
         // Use the Vuex store to add the new role

@@ -3,7 +3,7 @@
       <nav class="bg-white border-gray-200 dark:bg-gray-900">
         <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
           <a href="/" class="flex items-center space-x-3 rtl:space-x-reverse">
-            <img src="https://flowbite.com/docs/images/logo.svg" class="h-8" alt="Flowbite Logo" />
+            <!-- <img src="https://flowbite.com/docs/images/logo.svg" class="h-8" alt="Flowbite Logo" /> -->
             <span class="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">My App</span>
           </a>
           <div class="flex items-center md:order-2 space-x-3 md:space-x-0 rtl:space-x-reverse">
@@ -29,12 +29,7 @@
                   <span class="block text-sm text-gray-500 truncate dark:text-gray-400">{{ userEmail }}</span>
                 </div>
                 <ul class="py-2" aria-labelledby="user-menu-button">
-                  <li>
-                    <a href="/dashboard" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Dashboard</a>
-                  </li>
-                  <li>
-                    <a href="/settings" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Settings</a>
-                  </li>
+                  
                   <li>
                     <a href="#" @click.prevent="logout" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Sign out</a>
                   </li>
@@ -72,25 +67,39 @@
   </template>
   <script>
   import { initFlowbite } from 'flowbite';
+import api from './api/api';
 
   export default {
     data() {
       return {
-        isLoggedIn: false, // Set this dynamically based on actual authentication state
-        userPhoto: '../css/images.jpg', // Replace with the actual user photo
-        userName: 'John Doe', // Replace with the actual user name
-        userEmail: 'john.doe@example.com' // Replace with the actual user email
+        isLoggedIn: true,
+        userPhoto: '../css/images.jpg',
+        userName: 'John Doe',
+        userEmail: 'john.doe@example.com'
       };
     },
     methods: {
       logout() {
-        // Handle the logout logic here
-        this.isLoggedIn = false;
+         api.post("/api/logout",{
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem("token")}`,
+                },
+            }).catch((error) => {
+                console.log(error);
+            })
+            localStorage.removeItem("token");
+            this.isLoggedIn = false;
+
+            this.$router.push("/login");
         // Redirect to the login page or show a notification
       }
     },
     mounted() {
-      initFlowbite();
+        initFlowbite();
+        if(localStorage.getItem("token")){
+            this.isLoggedIn = true;
+        }
+
       // You can add your authentication state check here
     }
   };

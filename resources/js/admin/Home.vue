@@ -1,11 +1,15 @@
 <template>
-    <div class="flex h-screen bg-gradient-to-br from-gray-100 to-gray-300 font-roboto">
+    <div
+        class="flex h-screen bg-gradient-to-br from-gray-100 to-gray-300 font-roboto"
+    >
         <div
             class="fixed inset-0 z-20 transition-opacity bg-black opacity-50 lg:hidden"
         ></div>
         <Sidebar />
         <div class="flex-1 flex flex-col overflow-hidden">
-            <main class="flex-1 overflow-x-hidden overflow-y-auto bg-transparent">
+            <main
+                class="flex-1 overflow-x-hidden overflow-y-auto bg-transparent"
+            >
                 <div class="container mx-auto px-6 py-8">
                     <div class="mt-8">
                         <!-- Success Alert -->
@@ -44,8 +48,9 @@
                                     class="inline-block min-w-full shadow-lg rounded-lg overflow-hidden"
                                 >
                                     <table
-                                    v-if="permissions?.includes('read')"
-                                    class="min-w-full leading-normal">
+                                        v-if="permissions?.includes('read')"
+                                        class="min-w-full leading-normal"
+                                    >
                                         <thead>
                                             <tr>
                                                 <th
@@ -77,7 +82,9 @@
                                                 <td
                                                     class="px-5 py-5 border-b border-gray-300 bg-white text-sm"
                                                 >
-                                                    <div class="flex items-center">
+                                                    <div
+                                                        class="flex items-center"
+                                                    >
                                                         <div class="ml-3">
                                                             <p
                                                                 class="text-gray-900 whitespace-no-wrap"
@@ -106,8 +113,11 @@
                                                     >
                                                         {{
                                                             userlist.roles &&
-                                                            userlist.roles.length
-                                                                ? userlist.roles[0].name
+                                                            userlist.roles
+                                                                .length
+                                                                ? userlist
+                                                                      .roles[0]
+                                                                      .name
                                                                 : "No role assigned"
                                                         }}
                                                     </p>
@@ -116,8 +126,16 @@
                                                     class="px-5 space-x-4 py-5 border-b border-gray-300 bg-white text-sm"
                                                 >
                                                     <button
-                                                    v-if="permissions?.includes('update')"
-                                                        @click="userEdit(userlist.id)"
+                                                        v-if="
+                                                            permissions?.includes(
+                                                                'update'
+                                                            )
+                                                        "
+                                                        @click="
+                                                            userEdit(
+                                                                userlist.id
+                                                            )
+                                                        "
                                                         class="text-gray-500 hover:text-lime-500 transition-colors"
                                                     >
                                                         <i
@@ -125,8 +143,16 @@
                                                         ></i>
                                                     </button>
                                                     <button
-                                                    v-if="permissions?.includes('delete')"
-                                                        @click="userDelete(userlist.id)"
+                                                        v-if="
+                                                            permissions?.includes(
+                                                                'delete'
+                                                            )
+                                                        "
+                                                        @click="
+                                                            userDelete(
+                                                                userlist.id
+                                                            )
+                                                        "
                                                         class="text-gray-500 hover:text-red-500 transition-colors"
                                                     >
                                                         <i
@@ -134,26 +160,61 @@
                                                         ></i>
                                                     </button>
                                                     <button
-                                                    v-if="currentRole?currentRole[0]?.name === 'admin' :''"
-                                                        @click="showRoleSelect(userlist.id)"
+                                                        v-if="
+                                                            currentRole
+                                                                ? currentRole[0]
+                                                                      ?.name ===
+                                                                  'admin'
+                                                                : ''
+                                                        "
+                                                        @click="
+                                                            showRoleSelect(
+                                                                userlist.id
+                                                            )
+                                                        "
                                                         class="text-gray-500 hover:text-blue-700 transition-colors"
                                                     >
-                                                        <i class="fas fa-user-edit"></i>
+                                                        <i
+                                                            class="fas fa-user-edit"
+                                                        ></i>
                                                     </button>
                                                     <div
-                                                        v-if="userlist.id === editingRoleId"
+                                                        v-if="
+                                                            userlist.id ===
+                                                            editingRoleId
+                                                        "
                                                         class="inline-block relative"
                                                     >
                                                         <select
-                                                        v-if="currentRole?currentRole[0]?.name === 'admin' :''"
-                                                            v-model="selectedRole"
-                                                            @change="changeUserRole(userlist.id, selectedRole)"
+                                                            v-if="
+                                                                currentRole
+                                                                    ? currentRole[0]
+                                                                          ?.name ===
+                                                                      'admin'
+                                                                    : ''
+                                                            "
+                                                            v-model="
+                                                                selectedRole
+                                                            "
+                                                            @change="
+                                                                changeUserRole(
+                                                                    userlist.id,
+                                                                    selectedRole
+                                                                )
+                                                            "
                                                             class="block w-full bg-white border border-gray-300 text-gray-700 py-2 px-3 pr-8 rounded leading-tight focus:outline-none focus:border-blue-500"
                                                         >
-                                                            <option disabled value="">
+                                                            <option
+                                                                disabled
+                                                                value=""
+                                                            >
                                                                 Select Role
                                                             </option>
-                                                            <option v-for="role in roles" :key="role.id" :value="role.id">
+                                                            <option
+                                                                v-for="role in roles"
+                                                                :key="role.id"
+                                                                :value="role.id"
+                                                            >
                                                                 {{ role.name }}
                                                             </option>
                                                         </select>
@@ -162,6 +223,14 @@
                                             </tr>
                                         </tbody>
                                     </table>
+                                    <div
+                                        v-else
+                                        class="flex justify-center items-center h-32"
+                                    >
+                                        <p class="text-gray-500">
+                                            No permissions found.
+                                        </p>
+                                    </div>
                                     <div
                                         class="px-5 py-5 bg-white border-t flex flex-col xs:flex-row items-center xs:justify-between"
                                     >
@@ -192,4 +261,105 @@
     </div>
 </template>
 
-<script src="./index.js"></script>
+<script>
+
+
+import Sidebar from "./Sidebar.vue";
+import { mapGetters } from "vuex";
+
+export default {
+    name: "Home",
+    components: {
+        Sidebar,
+    },
+    data() {
+        return {
+            loginStatus: false,
+            currentRole: null,
+            userlists: null,
+            formData: {
+                name: '',
+                email: '',
+                password: ''
+            },
+            roles: null,
+            editingRoleId: null,
+            selectedRole: '',
+            successMessage: '',
+            permissions: null,
+        };
+    },
+    computed: {
+        ...mapGetters(["storeUserData", "storeRoles","authPermission","authRole"]),
+
+    },
+    watch: {
+        storeUserData(userData) {
+            this.userlists = userData;
+        },
+        storeRoles(allRoles) {
+            this.roles = allRoles;
+        },
+        authPermission(permissions) {
+           this.permissions = permissions;
+
+        },
+        authRole(role) {
+            this.currentRole = role;
+        }
+    },
+    methods: {
+        showRoleSelect(userId) {
+            this.editingRoleId = userId;
+        },
+        async changeUserRole(userId, newRole) {
+            try {
+                await this.$store.dispatch("updateUserRole", { userId, newRole });
+                this.successMessage = 'Role changed successfully!';
+                this.editingRoleId = null;
+
+                setTimeout(() => {
+                    this.successMessage = '';
+                }, 3000);
+
+                // Re-fetch data after role change
+                this.fetchData();
+            } catch (error) {
+                console.error('Failed to change user role:', error);
+                alert('Failed to change user role.');
+            }
+        },
+        async fetchData() {
+                await this.$store.dispatch("getUserData");
+                await this.$store.dispatch("getRoles");
+            // Fetch profile information
+            this.$store.dispatch('adminAuthProfile');
+        },
+        createData() {
+                this.$router.push('/user/create');
+        },
+        userEdit(userID) {
+            this.$router.push(`/admin/account/edit/${userID}`);
+        },
+        async userDelete(userID) {
+            try {
+                await this.$store.dispatch("deleteUser", userID);
+                this.fetchData(); // Re-fetch data after deleting a user
+            } catch (error) {
+                console.error('Failed to delete user:', error);
+            }
+        },
+        logout() {
+            this.$store.dispatch("logout");
+            this.$router.push("/login");
+            this.userlists = null;
+            this.roles = null;
+        }
+    },
+    async mounted() {
+       await this.fetchData();
+    },
+};
+
+</script>
+
