@@ -176,6 +176,7 @@ export default {
 },
         async permission(roleid) {
             await this.$store.dispatch("permissionlists", roleid);
+            await this.$store.dispatch("getRoles");
         },
         async editRole(roleId) {
             this.$router.push(`/edit/role/${roleId}`);

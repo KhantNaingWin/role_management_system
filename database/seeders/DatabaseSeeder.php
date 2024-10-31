@@ -26,8 +26,8 @@ class DatabaseSeeder extends Seeder
 
 
        Role::create(['name' => 'admin'])->givePermissionTo(Permission::all());
-       Role::create(['name' => 'editor'])->givePermissionTo(['create','read','update']);
-       Role::create(['name' => 'user'])->givePermissionTo('read');
+       Role::create(['name' => 'editor'])->givePermissionTo(['read','update','post_read','post_create','update_post','delete_post']);
+       Role::create(['name' => 'user'])->givePermissionTo(['read','post_read']);
 
 
     $user = User::create([
