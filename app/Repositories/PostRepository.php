@@ -11,10 +11,34 @@ use Illuminate\Support\Facades\Storage;
 class PostRepository implements PostInterface
 {
 
-    public function all()
+    public function all($request)
     {
 
-        return Post::all();
+        $perPage = $request->input('per_page', $request->per_page);
+        $page = $request->input('page', $request->page);
+        $sortBy = $request->input('sort_by', 'title');
+        $sortDesc = $request->input('sort_desc', false);
+
+        // Create a base query
+        $query = Post::query();
+
+        // Apply sorting
+        $query->orderBy($sortBy, $sortDesc === 'true' ? 'desc' : 'asc');
+
+        // Apply pagination
+       if($perPage == -1){
+        $posts = $query->get();
+        return [
+            'data'=> $posts,
+            'current_page' => $page,
+            'per_page' => $perPage,
+            'total' => $posts->count(),
+        ];
+       }else{
+        $posts = $query->paginate($perPage, ['*'], 'page', $page);
+        return $posts;
+
+       }
     }
 
     public function store($request)

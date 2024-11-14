@@ -5,16 +5,17 @@ namespace App\Repositories;
 use App\Models\User;
 use App\Models\Admin;
 use App\Interfaces\AdminInterface;
+use Request;
 use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\Hash;
 
 class AdminRepository implements AdminInterface
 {
 
-    public function all()
+    public function all($request)
     {
 
-        return User::all()->except(auth()->id());
+        return User::where('id', '!=', auth()->id())->paginate($request->per_page);
     }
 
     public function store($request)

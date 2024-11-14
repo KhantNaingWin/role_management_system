@@ -14,6 +14,7 @@ export default createStore({
         updateSuccess: "",
         authPermission: [],
         authRole: null,
+        pagination: null,
     },
     getters: {
         storeUserData: (state) => state.userData,
@@ -29,19 +30,14 @@ export default createStore({
     },
     mutations: {
         getUserData(state, user) {
-            state.userData = user;
+            state.userData = user.data;
+
         },
         createNewUser(state, newUser) {
             state.userData = [...newUser];
         },
-        // updateUser(state, updatedUser) {
-        //   const index = state.userData.findIndex(user => user.id === updatedUser.id);
-        //   if (index !== -1) {
-        //     state.userData.splice(index, 1, updatedUser); // Update the user in the array
-        //   }
-        // },
         deleteUser(state, userId) {
-            state.userData = state.userData.filter(
+            state.userData.data = state.userData.data.filter(
                 (user) => user.id !== userId
             );
         },
@@ -57,13 +53,12 @@ export default createStore({
         },
         // Role_Change
         Role_Change(state, data) {
-            const index = state.userData.findIndex(user => user.id === data.user.id);
-            if (index !== -1) {
-                // Update the user's roles in the userData array
-                state.userData[index].roles = data.user.roles; // Assuming `data.roles` contains the updated roles
 
-                // Make sure this is reactive
-                state.userData = [...state.userData]; // Trigger Vue's reactivity system
+            const index = state.userData?.data.findIndex(user => user.id === data.user.id);
+            if (index !== -1) {
+                state.userData.data[index].roles = data.user.roles;
+
+                state.userData.data = [...state.userData.data]; // Trigger Vue's reactivity system
             }
 
 
@@ -85,7 +80,7 @@ export default createStore({
             );
         },
         setPosts(state, posts) {
-            state.postData = posts;
+            state.postData = posts.data;
         },
         addPost(state, newPost) {
             state.postData.push(newPost); // Add the new post to the state array
@@ -132,14 +127,15 @@ export default createStore({
     },
     actions: {
         // },
-        async getUserData({ commit }) {
+        async getUserData({ commit }, { page, per_page }) {
             try {
-                const response = await api.get("api/admin", {
+                const response = await api.get(`api/admin/?page=${page}&per_page=${per_page}`, {
                     headers: {
                         'Authorization': `Bearer ${localStorage.getItem('token')}`
                     }
+
                 });
-                commit("getUserData", response.data);
+                commit("getUserData", response);
             } catch (error) {
                 console.error(error);
             }
@@ -179,33 +175,34 @@ export default createStore({
         async updateUserRole({ commit }, data) {
             try {
                 const response = await api.patch(`/api/users/rolechange/${data.userId}`, {
-                    role_id: data.newRole,
+                    role_id: data.selectedRole,
                 });
                 commit("Role_Change", response.data); // Assuming response.data contains the updated user
             } catch (error) {
                 console.error(error);
             }
         },
-        async fetchPosts({ commit }) {
-            const response = await api.get("/api/post"
-                , {
+        async fetchPosts({ commit },post) {
+            const response = await api.get(`/api/post?page=${post.page}&per_page=${post.itemsPerPage}`,
+                 {
                     headers: {
                         'Authorization': `Bearer ${localStorage.getItem('token')}`
                     }
                 }
+
             );
-            commit("setPosts", response.data);
+            commit("setPosts", response);
         },
         async createPost({ commit }, newPost) {
             const response = await api.post("/api/post", newPost);
-            commit("addPost", response.data); // Assuming response.data contains the created post
+            commit("addPost", response.data);
         },
         async updatePost({ commit }, updatedPost) {
             const response = await api.put(
                 `/api/post/${updatedPost.id}`,
                 updatedPost
             );
-            commit("updatePost", response.data); // Assuming response.data contains the updated post
+            commit("updatePost", response.data);
         },
         async deletePost({ commit }, postId) {
             await api.delete(`/api/post/${postId}`);

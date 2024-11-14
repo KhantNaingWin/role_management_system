@@ -13,10 +13,10 @@ class AdminController extends Controller
     {
 
     }
-    public function index()
+    public function index(Request $request)
     {
         if (auth()->user()->hasPermissionTo('read')) {
-            $admins = $this->adminInterface->all();
+            $admins = $this->adminInterface->all($request);
             $admins->load('roles');
             if ($admins) {
                 return response()->json($admins);

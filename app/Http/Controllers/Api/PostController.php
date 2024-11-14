@@ -13,10 +13,10 @@ class PostController extends Controller
     {
 
     }
-    public function index()
+    public function index(Request $request)
     {
         if(auth()->user()->can("post_read")){
-            $posts = $this->postInterface->all();
+            $posts = $this->postInterface->all($request);
         if ($posts) {
             return response()->json($posts);
     }else{

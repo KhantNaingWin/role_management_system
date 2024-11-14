@@ -3,7 +3,6 @@ import Login from "../pages/Login.vue";
 import Home from "../user/Home.vue";
 import AdminHome from "../admin/Home.vue";
 import api from "../api/api";
-import PostPage from "../admin/post/Postcreate.vue";
 import Mainlayout from "../Mainlayout.vue";
 import RoleManagement from "../role/RoleManagement.vue";
 import Edit from "../admin/Edit.vue";
@@ -58,9 +57,25 @@ export const routes = [
         }
     },
     {
-        path: '/admin/post/create',
-        name: 'admin-post-create',
-        component: PostPage,
+        path: '/admin/post/form',
+        name: 'admin-post-form',
+        component: () => import('../admin/post/Postform.vue'),
+        beforeEnter: async (to, from) => {
+            await roleBasedAuth('admin');
+        }
+    },
+    {
+        path: '/admin/post/form/:id',
+        name: 'admin-post-form',
+        component: () => import('../admin/post/Postform.vue'),
+        beforeEnter: async (to, from) => {
+            await roleBasedAuth('admin');
+        }
+    },
+    {
+        path: '/admin/posts',
+        name: 'admin-posts',
+        component: () => import('../admin/post/Postlists.vue'),
         beforeEnter: async (to, from) => {
             await roleBasedAuth('admin');
         }

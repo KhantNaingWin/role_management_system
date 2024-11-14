@@ -12,7 +12,6 @@
             >
                 <div class="container mx-auto px-6 py-8">
                     <div class="mt-8">
-                        <!-- Success Alert -->
                         <div v-if="successMessage" class="mt-4">
                             <div
                                 class="flex p-4 mb-4 text-sm text-green-800 border border-green-300 rounded-lg bg-green-50 shadow-md"
@@ -32,13 +31,13 @@
                         </div>
                         <div class="mt-6">
                             <div>
-                                <button
+                                <v-btn
                                     @click="createData"
                                     v-if="permissions?.includes('create')"
-                                    class="bg-indigo-600 text-white px-5 py-2 my-2 rounded-md shadow-lg hover:bg-indigo-700 transition-transform transform hover:scale-105"
+                                    class="bg-blue"
                                 >
                                     Add
-                                </button>
+                                </v-btn>
                             </div>
 
                             <div
@@ -47,29 +46,22 @@
                                 <div
                                     class="inline-block min-w-full shadow-lg rounded-lg overflow-hidden"
                                 >
-                                    <table
+                                    <!-- <v-table
                                         v-if="permissions?.includes('read')"
-                                        class="min-w-full leading-normal"
                                     >
                                         <thead>
                                             <tr>
-                                                <th
-                                                    class="px-5 py-3 border-b-2 border-gray-300 bg-gray-200 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider"
-                                                >
+                                                <th class="indigo-lighten-4">
                                                     Name
                                                 </th>
-                                                <th
-                                                    class="px-5 py-3 border-b-2 border-gray-300 bg-gray-200 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider"
-                                                >
+                                                <th class="indigo-lighten-4">
                                                     Email
                                                 </th>
-                                                <th
-                                                    class="px-5 py-3 border-b-2 border-gray-300 bg-gray-200 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider"
-                                                >
+                                                <th class="indigo-lighten-4">
                                                     Role
                                                 </th>
                                                 <th
-                                                    class="px-5 py-3 border-b-2 border-gray-300 bg-gray-200 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider"
+                                                    class="indigo-lighten-4"
                                                 ></th>
                                             </tr>
                                         </thead>
@@ -222,34 +214,119 @@
                                                 </td>
                                             </tr>
                                         </tbody>
-                                    </table>
-                                    <div
-                                        v-else
-                                        class="flex justify-center items-center h-32"
-                                    >
-                                        <p class="text-gray-500">
-                                            No permissions found.
-                                        </p>
-                                    </div>
-                                    <div
-                                        class="px-5 py-5 bg-white border-t flex flex-col xs:flex-row items-center xs:justify-between"
-                                    >
-                                        <span
-                                            class="text-xs xs:text-sm text-gray-700"
-                                            >Showing 1 to 4 of 50 Entries</span
+                                    </v-table> -->
+                                    <div>
+                                        <v-data-table-server
+                                            :items="userlists?.data"
+                                            :headers="headers"
+                                            :items-length="userlists?.total"
+                                            :loading="loading"
+                                            @update:options="fetchData"
                                         >
-                                        <div class="inline-flex mt-2 xs:mt-0">
-                                            <button
-                                                class="text-sm bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-4 rounded-l transition-colors"
-                                            >
-                                                Prev
-                                            </button>
-                                            <button
-                                                class="text-sm bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-4 rounded-r transition-colors"
-                                            >
-                                                Next
-                                            </button>
-                                        </div>
+                                            <template v-slot:body="{ items }">
+                                                <tr
+                                                    v-for="userlist in items"
+                                                    :key="userlist.id"
+                                                >
+                                                    <td>{{ userlist.name }}</td>
+                                                    <td>
+                                                        {{ userlist.email }}
+                                                    </td>
+                                                    <td>
+                                                        {{
+                                                            userlist.roles &&
+                                                            userlist.roles
+                                                                .length
+                                                                ? userlist
+                                                                      .roles[0]
+                                                                      .name
+                                                                : "No role assigned"
+                                                        }}
+                                                    </td>
+                                                    <td class="text-center">
+                                                        <v-btn
+                                                            class="ml-2"
+                                                            icon
+                                                            v-if="
+                                                                permissions?.includes(
+                                                                    'update'
+                                                                )
+                                                            "
+                                                            @click="
+                                                                userEdit(
+                                                                    userlist.id
+                                                                )
+                                                            "
+                                                        >
+                                                            <v-icon
+                                                                >mdi-pencil</v-icon
+                                                            >
+                                                        </v-btn>
+                                                        <v-btn
+                                                            class="ml-2"
+                                                            icon
+                                                            v-if="
+                                                                permissions?.includes(
+                                                                    'delete'
+                                                                )
+                                                            "
+                                                            @click="
+                                                                userDelete(
+                                                                    userlist.id
+                                                                )
+                                                            "
+                                                        >
+                                                            <v-icon
+                                                                >mdi-delete</v-icon
+                                                            >
+                                                        </v-btn>
+                                                        <v-btn
+                                                            class="ml-2"
+                                                            icon
+                                                            v-if="
+                                                                currentRole?.[0]
+                                                                    ?.name ===
+                                                                'admin'
+                                                            "
+                                                            @click="
+                                                                showRoleSelect(
+                                                                    userlist.id
+                                                                )
+                                                            "
+                                                        >
+                                                            <v-icon
+                                                                >mdi-account-edit</v-icon
+                                                            >
+                                                        </v-btn>
+                                                        <div
+                                                            v-if="
+                                                                userlist.id ===
+                                                                editingRoleId
+                                                            "
+                                                            class="inline-block relative"
+                                                        >
+                                                            <v-select
+                                                                v-if="
+                                                                    currentRole?.[0]
+                                                                        ?.name ===
+                                                                    'admin'
+                                                                "
+                                                                v-model="
+                                                                    selectedRole
+                                                                "
+                                                                :items="roles"
+                                                                item-title="name"
+                                                                item-value="id"
+                                                                label="Select Role"
+                                                                 @update:modelValue="value => changeUserRole(value, userlist.id)"
+                                                                dense
+                                                                variant="outlined"
+                                                            ></v-select>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            </template>
+                                        </v-data-table-server>
                                     </div>
                                 </div>
                             </div>
@@ -262,10 +339,9 @@
 </template>
 
 <script>
-
-
 import Sidebar from "./Sidebar.vue";
 import { mapGetters } from "vuex";
+import "material-icons/iconfont/material-icons.css";
 
 export default {
     name: "Home",
@@ -278,20 +354,37 @@ export default {
             currentRole: null,
             userlists: null,
             formData: {
-                name: '',
-                email: '',
-                password: ''
+                name: "",
+                email: "",
+                password: "",
             },
+            headers: [
+                { title: "Name", value: "name" },
+                { title: "Email", value: "email" },
+                { title: "Role", value: "role" },
+                { title: "", value: "" },
+            ],
+            currentPage: 1,
+            itemsPerPage: 10,
+            totalItems: 0,
+            search: "",
+            loading: false,
             roles: null,
             editingRoleId: null,
-            selectedRole: '',
-            successMessage: '',
+            selectedRole: "",
+            successMessage: "",
             permissions: null,
+            perPage: 6,
+            page: 0,
         };
     },
     computed: {
-        ...mapGetters(["storeUserData", "storeRoles","authPermission","authRole"]),
-
+        ...mapGetters([
+            "storeUserData",
+            "storeRoles",
+            "authPermission",
+            "authRole",
+        ]),
     },
     watch: {
         storeUserData(userData) {
@@ -301,42 +394,49 @@ export default {
             this.roles = allRoles;
         },
         authPermission(permissions) {
-           this.permissions = permissions;
-
+            this.permissions = permissions;
         },
         authRole(role) {
             this.currentRole = role;
-        }
+        },
     },
     methods: {
         showRoleSelect(userId) {
             this.editingRoleId = userId;
         },
-        async changeUserRole(userId, newRole) {
+        async changeUserRole(selectedRole, userId) {
             try {
-                await this.$store.dispatch("updateUserRole", { userId, newRole });
-                this.successMessage = 'Role changed successfully!';
+                await this.$store.dispatch("updateUserRole", {
+                    userId,
+                    selectedRole,
+                });
+                this.successMessage = "Role changed successfully!";
                 this.editingRoleId = null;
 
                 setTimeout(() => {
-                    this.successMessage = '';
+                    this.successMessage = "";
                 }, 3000);
 
                 // Re-fetch data after role change
                 this.fetchData();
             } catch (error) {
-                console.error('Failed to change user role:', error);
-                alert('Failed to change user role.');
+                console.error("Failed to change user role:", error);
+                alert("Failed to change user role.");
             }
         },
-        async fetchData() {
-                await this.$store.dispatch("getUserData");
-                await this.$store.dispatch("getRoles");
+        async fetchData({ page, itemsPerPage }) {
+            this.loading = true;
+            await this.$store.dispatch("getUserData", {
+                page: page,
+                per_page: itemsPerPage,
+            });
+            this.loading = false;
+            await this.$store.dispatch("getRoles");
             // Fetch profile information
-            this.$store.dispatch('adminAuthProfile');
+            this.$store.dispatch("adminAuthProfile");
         },
         createData() {
-                this.$router.push('/user/create');
+            this.$router.push("/user/create");
         },
         userEdit(userID) {
             this.$router.push(`/admin/account/edit/${userID}`);
@@ -346,7 +446,7 @@ export default {
                 await this.$store.dispatch("deleteUser", userID);
                 this.fetchData(); // Re-fetch data after deleting a user
             } catch (error) {
-                console.error('Failed to delete user:', error);
+                console.error("Failed to delete user:", error);
             }
         },
         logout() {
@@ -354,12 +454,7 @@ export default {
             this.$router.push("/login");
             this.userlists = null;
             this.roles = null;
-        }
-    },
-    async mounted() {
-       await this.fetchData();
+        },
     },
 };
-
 </script>
-

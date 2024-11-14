@@ -111,7 +111,7 @@ export default {
             this.$router.push("/login");
         },
         postPage() {
-            this.$router.push("/admin/post/create");
+            this.$router.push("/admin/posts");
         },
         userList() {
             this.$router.push("/admin/home");
