@@ -10,7 +10,24 @@
                             <v-btn color="secondary" @click="postcreate" class="mb-4">
                                 Create Post
                             </v-btn>
+                            <v-text-field
+                                v-model="search"
+                                label="Search"
+                                clearable
+                                @input="fetchData({ page: 1, itemsPerPage: itemsPerPage,search })"
+                                 @click:clear="handleClear"
+                            ></v-text-field>
+                            <v-progress-circular
+                                v-if="loading"
+                                indeterminate
+                                color="primary"
+                                class="mx-auto"
+                            ></v-progress-circular>
+                            <div v-else-if="totalItems === 0" class="text-center py-4">
+                                <p>No data available.</p>
+                            </div>
                             <v-data-table-server
+                            v-else
                                 :headers="headers"
                                 :items="items?.data"
                                 :items-length="totalItems"
@@ -59,6 +76,7 @@ import Sidebar from '../Sidebar.vue';
         totalItems: 0,
         itemsPerPage: 10,
         page: 1,
+        search: '',
         headers: [
           { title: 'Title', value: 'title' },
           { title: 'Description', value: 'description' },
@@ -80,7 +98,7 @@ import Sidebar from '../Sidebar.vue';
       fetchData(options) {
         this.loading = true;
 
-        const { page, itemsPerPage} = options;
+        const { page, itemsPerPage,search } = options;
         try {
             this.$store.dispatch("fetchPosts",options);
             this.loading = false;
@@ -107,9 +125,12 @@ import Sidebar from '../Sidebar.vue';
                     console.error(error);
                 });
       },
+      handleClear() {
+            this.search = ''; 
+            this.fetchData({ page: 1, itemsPerPage: this.itemsPerPage, search: '' }); // Fetch original data
+        },
     },
     mounted() {
-      // Initial fetch
       this.fetchData({ page: this.page, itemsPerPage: this.itemsPerPage });
     },
   };

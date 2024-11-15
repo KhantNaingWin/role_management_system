@@ -109,6 +109,7 @@ export default {
                 } else {
                     await this.$store.dispatch("createPost", this.formData);
                     this.successMessage = "Post created successfully!";
+
                 }
                 this.resetForm();
             } catch (error) {

@@ -16,16 +16,15 @@ class PostRepository implements PostInterface
 
         $perPage = $request->input('per_page', $request->per_page);
         $page = $request->input('page', $request->page);
-        $sortBy = $request->input('sort_by', 'title');
-        $sortDesc = $request->input('sort_desc', false);
+        $search = $request->input('search', '');
 
-        // Create a base query
+
         $query = Post::query();
+        if ($search) {
+            $query->where('title', 'like', '%' . $search . '%')
+                  ->orWhere('description', 'like', '%' . $search . '%');
+        }
 
-        // Apply sorting
-        $query->orderBy($sortBy, $sortDesc === 'true' ? 'desc' : 'asc');
-
-        // Apply pagination
        if($perPage == -1){
         $posts = $query->get();
         return [
@@ -48,7 +47,6 @@ class PostRepository implements PostInterface
         $post->title = $request->title;
         $post->description = $request->description;
         if ($request->hasFile('image')) {
-            // Store the image in the 'public/images' directory
             $imagePath = $request->file('image')->getClientOriginalName();
            $request->file('image')->storeAs('public/images', $imagePath);
             $post->image = $imagePath;
@@ -70,7 +68,6 @@ class PostRepository implements PostInterface
         $data->title = $request->title;
         $data->description = $request->description;
         if ($request->hasFile('image')) {
-            // Store the image in the 'public/images' directory
             $imagePath = $request->file('image')->getClientOriginalName();
            $request->file('image')->storeAs('public/images', $imagePath);
             $data->image = $imagePath;

@@ -75,8 +75,6 @@ export default createStore({
 
         },
         deletePost(state, postId) {
-            console.log(state.postData);
-
             state.postData.data = state.postData?.data.filter(
                 (post) => post.id !== postId
             );
@@ -185,7 +183,7 @@ export default createStore({
             }
         },
         async fetchPosts({ commit },post) {
-            const response = await api.get(`/api/post?page=${post.page}&per_page=${post.itemsPerPage}`,
+            const response = await api.get(`/api/post?page=${post.page}&per_page=${post.itemsPerPage}&search=${post.search?post.search:""}`,
                  {
                     headers: {
                         'Authorization': `Bearer ${localStorage.getItem('token')}`
