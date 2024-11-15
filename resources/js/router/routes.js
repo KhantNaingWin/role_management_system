@@ -66,7 +66,10 @@ export const routes = [
     },
     {
         path: '/admin/post/form/:id',
-        name: 'admin-post-form',
+        name: 'admin-post-edit',
+        meta: {
+            props: true
+        },
         component: () => import('../admin/post/Postform.vue'),
         beforeEnter: async (to, from) => {
             await roleBasedAuth('admin');

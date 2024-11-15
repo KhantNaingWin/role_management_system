@@ -219,7 +219,7 @@
                                         <v-data-table-server
                                             :items="userlists?.data"
                                             :headers="headers"
-                                            :items-length="userlists?.total"
+                                            :items-length="totalItems"
                                             :loading="loading"
                                             @update:options="fetchData"
                                         >
@@ -389,6 +389,7 @@ export default {
     watch: {
         storeUserData(userData) {
             this.userlists = userData;
+            this.totalItems = userData?.total
         },
         storeRoles(allRoles) {
             this.roles = allRoles;

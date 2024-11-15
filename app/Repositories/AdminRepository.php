@@ -15,7 +15,13 @@ class AdminRepository implements AdminInterface
     public function all($request)
     {
 
+       if($request->per_page == -1){
+        $users = User::where('id', '!=', auth()->id())->paginate();
+        return $users;
+
+       }else{
         return User::where('id', '!=', auth()->id())->paginate($request->per_page);
+       }
     }
 
     public function store($request)

@@ -34,7 +34,7 @@ export default createStore({
 
         },
         createNewUser(state, newUser) {
-            state.userData = [...newUser];
+            state.userData = newUser;
         },
         deleteUser(state, userId) {
             state.userData.data = state.userData.data.filter(
@@ -67,15 +67,17 @@ export default createStore({
 
 
         updatePost(state, updatedPost) {
-            const index = state.postData.findIndex(
-                (post) => post.id === updatedPost.id
-            );
-            if (index !== -1) {
-                state.postData.splice(index, 1, updatedPost); // Update the post in the array
-            }
+           try {
+            state.postData.data =[state.postData?.data,{...updatedPost}];
+           } catch (error) {
+            console.error(error);
+           }
+
         },
         deletePost(state, postId) {
-            state.postData = state.postData.filter(
+            console.log(state.postData);
+
+            state.postData.data = state.postData?.data.filter(
                 (post) => post.id !== postId
             );
         },
@@ -83,7 +85,7 @@ export default createStore({
             state.postData = posts.data;
         },
         addPost(state, newPost) {
-            state.postData.push(newPost); // Add the new post to the state array
+            state.postData?.data.push(newPost); // Add the new post to the state array
         },
         getRoles(state, getRoles) {
             state.roles = getRoles;
@@ -202,7 +204,7 @@ export default createStore({
                 `/api/post/${updatedPost.id}`,
                 updatedPost
             );
-            commit("updatePost", response.data);
+            commit("updatePost", response.data?.[0]);
         },
         async deletePost({ commit }, postId) {
             await api.delete(`/api/post/${postId}`);

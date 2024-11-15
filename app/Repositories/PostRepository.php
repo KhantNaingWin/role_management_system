@@ -76,6 +76,7 @@ class PostRepository implements PostInterface
             $data->image = $imagePath;
         }
         $data->update();
+        return $data;
     }
     public function destroy($id)
     {

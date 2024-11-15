@@ -24,10 +24,10 @@
                                         <td >{{ item.title }}</td>
                                         <td>{{ item.description }}</td>
                                         <td class="space-x-2">
-                                            <v-btn icon @click="editItem(item)">
+                                            <v-btn  v-if="authPermission?.includes('update_post')" icon @click="editItem(item)">
                                                 <v-icon>mdi-pencil</v-icon>
                                             </v-btn>
-                                            <v-btn icon @click="deleteItem(item.id)">
+                                            <v-btn icon  v-if="authPermission?.includes('delete_post')" @click="deleteItem(item.id)">
                                                 <v-icon>mdi-delete</v-icon>
                                             </v-btn>
                                         </td>
@@ -47,7 +47,6 @@
   <script>
 import { mapGetters } from 'vuex/dist/vuex.cjs.js';
 import Sidebar from '../Sidebar.vue';
-import api from '../../api/api';
 
   export default {
     components :{
@@ -100,7 +99,13 @@ import api from '../../api/api';
 
       },
       deleteItem(itemId) {
-        // Implement your delete logic here
+        this.$store.dispatch("deletePost",itemId)
+        .then(() => {
+                    this.fetchData({ page: this.page, itemsPerPage: this.itemsPerPage});
+                })
+                .catch((error) => {
+                    console.error(error);
+                });
       },
     },
     mounted() {
