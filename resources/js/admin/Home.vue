@@ -418,8 +418,7 @@ export default {
                     this.successMessage = "";
                 }, 3000);
 
-                // Re-fetch data after role change
-                this.fetchData();
+                this.fetchData({ page: 1, itemsPerPage: 10 });
             } catch (error) {
                 console.error("Failed to change user role:", error);
                 alert("Failed to change user role.");
@@ -445,7 +444,7 @@ export default {
         async userDelete(userID) {
             try {
                 await this.$store.dispatch("deleteUser", userID);
-                this.fetchData(); // Re-fetch data after deleting a user
+               this.fetchData({ page: 1, itemsPerPage: 10 });
             } catch (error) {
                 console.error("Failed to delete user:", error);
             }
