@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
-use App\Interfaces\RoleInterface;
 use Illuminate\Http\Request;
+use App\Interfaces\RoleInterface;
+use Spatie\Permission\Models\Role;
+use App\Http\Controllers\Controller;
 
 class RoleController extends Controller
 {
@@ -12,9 +13,9 @@ class RoleController extends Controller
     {
 
     }
-    public function index()
+    public function index(Request $request)
     {
-        $roles = $this->roleInterface->all();
+        $roles = $this->roleInterface->all($request);
         return response()->json($roles);
     }
 
@@ -70,5 +71,12 @@ class RoleController extends Controller
         $role = $this->roleInterface->destroy($id);
         return response()->json($role,200);
     }
-    
+    //get all roles
+    public function getRoles(){
+        $roles = Role::all();
+        return response()->json([
+            'roles' => $roles,
+        ]);
+    }
+
 }

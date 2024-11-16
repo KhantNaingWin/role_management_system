@@ -26,6 +26,7 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/login/profile', [UserController::class, 'profile']);
     Route::patch('/users/rolechange/{id}', [UserController::class, 'updateRole']);
     Route::put('/authuser/update', [UserController::class, 'authuserUpdate']);
+    Route::get("/roles",[RoleController::class,'getRoles']);
 
 });
 

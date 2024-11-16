@@ -35,10 +35,18 @@
             color="indigo"
             block
             class="mt-6"
+            :disabled="loading"
           >
-            Sign in
+          <span v-if="loading">Loading...</span>
+          <span v-else>Sign in</span>
           </v-btn>
         </v-form>
+        <v-progress-circular
+        v-if="loading"
+        indeterminate
+        color="indigo"
+        class="mt-4"
+      ></v-progress-circular>
       </v-card>
     </div>
   </template>
@@ -56,10 +64,13 @@
         },
         errorStatus: false,
         errorMessage: "",
+        loading: false,
       };
     },
     methods: {
       async loginUserData() {
+        this.loading = true;
+        this.errorStatus = false;
         try {
           const response = await api.post("/api/login", this.formData);
           const token = response.data.token;
@@ -84,8 +95,11 @@
           console.error(error);
           this.errorStatus = true;
           this.errorMessage = error.response?.data?.message || 'Login failed. Please try again.';
-          this.formData.password = ""; // Clear password for security
+          this.formData.password = "";
         }
+        finally {
+        this.loading = false;
+      }
       },
     },
   };

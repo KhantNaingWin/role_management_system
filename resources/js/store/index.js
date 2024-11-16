@@ -15,6 +15,7 @@ export default createStore({
         authPermission: [],
         authRole: null,
         pagination: null,
+        allroles: [],
     },
     getters: {
         storeUserData: (state) => state.userData,
@@ -27,6 +28,7 @@ export default createStore({
         updateSuccess: (state) => state.updateSuccess,
         authPermission: (state) => state.authPermission,
         authRole: (state) => state.authRole,
+        allroles: (state) => state.allroles,
     },
     mutations: {
         getUserData(state, user) {
@@ -67,11 +69,11 @@ export default createStore({
 
 
         updatePost(state, updatedPost) {
-           try {
-            state.postData.data =[state.postData?.data,{...updatedPost}];
-           } catch (error) {
-            console.error(error);
-           }
+            try {
+                state.postData.data = [state.postData?.data, { ...updatedPost }];
+            } catch (error) {
+                console.error(error);
+            }
 
         },
         deletePost(state, postId) {
@@ -89,7 +91,8 @@ export default createStore({
             state.roles = getRoles;
         },
         newRoles(state, newRole) {
-            state.roles.push(newRole);
+
+            state.roles?.data.push(newRole);
         },
         updateRole(state, updatedRole) {
             const index = state.roles.findIndex(
@@ -123,6 +126,10 @@ export default createStore({
         // permissionlists
         permissionlists(state, data) {
             state.permissions = data
+        },
+        //allRoles
+        allRoles(state, data) {
+            state.allroles = data
         }
     },
     actions: {
@@ -182,9 +189,9 @@ export default createStore({
                 console.error(error);
             }
         },
-        async fetchPosts({ commit },post) {
-            const response = await api.get(`/api/post?page=${post.page}&per_page=${post.itemsPerPage}&search=${post.search?post.search:""}`,
-                 {
+        async fetchPosts({ commit }, post) {
+            const response = await api.get(`/api/post?page=${post.page}&per_page=${post.itemsPerPage}&search=${post.search ? post.search : ""}`,
+                {
                     headers: {
                         'Authorization': `Bearer ${localStorage.getItem('token')}`
                     }
@@ -208,15 +215,23 @@ export default createStore({
             await api.delete(`/api/post/${postId}`);
             commit("deletePost", postId); // Remove post from the store
         },
-        async getRoles({ commit }) {
-            const response = await api.get("api/role"
-                , {
-                    headers: {
-                        'Authorization': `Bearer ${localStorage.getItem('token')}`
-                    }
+        async fetchRoles({ commit }, role) {
+            console.log(role);
+
+            const response = await api.get(`api/role?page=${role.page}&per_page=${role.itemsPerPage}`, {
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
                 }
-            );
+            });
             commit("getRoles", response.data);
+        },
+        async getRoles({ commit }) {
+            const response = await api.get("api/roles", {
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                }
+            });
+            commit("allRoles", response.data);
         },
         //new role create
         async newRoles({ commit }, newRole) {

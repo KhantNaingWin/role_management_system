@@ -381,7 +381,7 @@ export default {
     computed: {
         ...mapGetters([
             "storeUserData",
-            "storeRoles",
+            "allroles",
             "authPermission",
             "authRole",
         ]),
@@ -391,8 +391,8 @@ export default {
             this.userlists = userData;
             this.totalItems = userData?.total
         },
-        storeRoles(allRoles) {
-            this.roles = allRoles;
+        allroles(allRoles) {
+            this.roles = allRoles?.roles;
         },
         authPermission(permissions) {
             this.permissions = permissions;
@@ -432,7 +432,6 @@ export default {
             });
             this.loading = false;
             await this.$store.dispatch("getRoles");
-            // Fetch profile information
             this.$store.dispatch("adminAuthProfile");
         },
         createData() {

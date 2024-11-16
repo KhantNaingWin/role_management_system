@@ -62,12 +62,7 @@
                                         <button @click="cancelEdit" class="px-4 py-2 bg-gray-600 text-white rounded-lg shadow hover:bg-gray-700 transition">Cancel</button>
                                     </div>
                                 </div>
-                                <div v-else>
-                                    <div class="flex mt-6 space-x-3">
-                                        <button class="px-4 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition">Message</button>
-                                        <button class="px-4 py-2 bg-gray-600 text-white rounded-lg shadow hover:bg-gray-700 transition">Follow</button>
-                                    </div>
-                                </div>
+                                
                             </div>
                         </div>
                     </div>

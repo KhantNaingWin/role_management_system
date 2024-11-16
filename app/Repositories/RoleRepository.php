@@ -11,10 +11,16 @@ use Illuminate\Support\Facades\Hash;
 class RoleRepository implements RoleInterface
 {
 
-    public function all()
+    public function all($request)
     {
 
-        return Role::all();
+       if($request->per_page == -1){
+        $roles = Role::paginate();
+        return $roles;
+
+       }else{
+        return Role::paginate($request->per_page);
+       }
     }
 
     public function store($request)

@@ -100,6 +100,14 @@ export const routes = [
         }
     },
     {
+        path: '/role/create',
+        name: 'role-create',
+        component: ()=> import('../role/RoleCreate.vue'),
+        beforeEnter: async (to, from) => {
+            await roleBasedAuth('admin');
+        }
+    },
+    {
         path: '/edit/role/:id',
         name: 'edit-role',
         props: true,
