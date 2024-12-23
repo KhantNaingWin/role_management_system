@@ -38,31 +38,39 @@
                             <div class="flex flex-col items-center pb-6">
                                 <img class="w-28 h-28 mb-4 rounded-full shadow-lg border-4 border-gray-300" src="../../css/images.jpg" alt="Profile Image"/>
                                 <div class="text-center">
-                                    <h5 class="text-xl font-semibold text-gray-800 mb-1">{{ profile ? profile.name : "Loading..." }}</h5>
-                                    <p class="text-sm text-gray-600">{{ profile ? profile.email : "Loading..." }}</p>
+                                    <p class="text-sm text-gray-600 mb-1">
+                                        <strong>Name:</strong> {{ profile ? profile.name : "Loading..." }}
+                                    </p>
+                                    <p class="text-sm text-gray-600">
+                                        <strong>Email:</strong> {{ profile ? profile.email : "Loading..." }}
+                                    </p>
                                     <div class="mt-3">
-                                        <span class="px-3 py-1 rounded-full text-sm font-medium bg-indigo-100 text-indigo-600">{{ profile ? profile.roles[0].name : "Loading..." }}</span>
+                                        <span class="px-3 py-1 rounded-full text-sm font-medium bg-indigo-100 text-indigo-600">
+                                            <strong>Role:</strong> {{ profile ? profile.roles[0].name : "Loading..." }}
+                                        </span>
                                     </div>
                                 </div>
                                 <div v-if="isEditMode" class="w-full px-4 py-2">
-                                    <input
-                                        v-model="editProfile.name"
-                                        type="text"
-                                        placeholder="Enter your name"
-                                        class="w-full px-3 py-2 border border-gray-300 rounded-lg"
-                                    />
-                                    <input
-                                        v-model="editProfile.email"
-                                        type="email"
-                                        placeholder="Enter your email"
-                                        class="w-full mt-2 px-3 py-2 border border-gray-300 rounded-lg"
-                                    />
-                                    <div class="flex mt-4 space-x-3">
-                                        <button @click="saveProfile" class="px-4 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition">Save</button>
-                                        <button @click="cancelEdit" class="px-4 py-2 bg-gray-600 text-white rounded-lg shadow hover:bg-gray-700 transition">Cancel</button>
-                                    </div>
+                                    <v-form @submit.prevent="saveProfile">
+                                        <v-text-field
+                                            v-model="editProfile.name"
+                                            label="Name"
+                                            outlined
+                                            required
+                                        ></v-text-field>
+                                        <v-text-field
+                                            v-model="editProfile.email"
+                                            label="Email"
+                                            type="email"
+                                            outlined
+                                            required
+                                        ></v-text-field>
+                                        <div class="flex mt-4 space-x-3">
+                                            <v-btn type="submit" color="primary" class="mr-2">Save</v-btn>
+                                            <v-btn @click="cancelEdit" color="grey">Cancel</v-btn>
+                                        </div>
+                                    </v-form>
                                 </div>
-                                
                             </div>
                         </div>
                     </div>
