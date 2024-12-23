@@ -53,7 +53,7 @@
                           required
                         ></v-text-field>
 
-                        <div class="flex items-center justify-between">
+                        <div class="flex my-3 items-center justify-between">
                           <v-btn
                             type="submit"
                             color="blue"

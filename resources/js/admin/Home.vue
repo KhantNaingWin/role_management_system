@@ -245,7 +245,7 @@
                                                     </td>
                                                     <td class="text-center">
                                                         <v-btn
-                                                            class="ml-2"
+                                                        elevation="0"
                                                             icon
                                                             v-if="
                                                                 permissions?.includes(
@@ -259,11 +259,14 @@
                                                             "
                                                         >
                                                             <v-icon
+                                                            elevation="0"
+                                                                small
+                                                                class="text-green"
                                                                 >mdi-pencil</v-icon
                                                             >
                                                         </v-btn>
                                                         <v-btn
-                                                            class="ml-2"
+                                                        elevation="0"
                                                             icon
                                                             v-if="
                                                                 permissions?.includes(
@@ -277,11 +280,13 @@
                                                             "
                                                         >
                                                             <v-icon
+                                                                small
+                                                                class="text-red"
                                                                 >mdi-delete</v-icon
                                                             >
                                                         </v-btn>
                                                         <v-btn
-                                                            class="ml-2"
+                                                            elevation="0"
                                                             icon
                                                             v-if="
                                                                 currentRole?.[0]
@@ -295,6 +300,7 @@
                                                             "
                                                         >
                                                             <v-icon
+                                                                small
                                                                 >mdi-account-edit</v-icon
                                                             >
                                                         </v-btn>
