@@ -15,19 +15,24 @@
                             placeholder="Enter role name"
                             outlined
                             class="mb-4"
+                            :loading="loading"
                         />
                         <div class="mb-6">
-                            <h2 class="block text-gray-700 text-lg font-lg ms-6 mb-2">
+                            <h2
+                                class="block text-gray-700 text-lg font-lg ms-6 mb-2"
+                            >
                                 Permissions
                             </h2>
-                            <v-container class="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                            <v-container
+                                class="grid grid-cols-2 sm:grid-cols-3 gap-4"
+                            >
                                 <v-checkbox
                                     v-for="p in permissions"
                                     :key="p.id"
                                     v-model="editData.permissions"
                                     :label="p.name"
                                     :value="p.name"
-                                    :id="p.id"
+                                    :id="String(p.id)"
                                     class="flex items-center"
                                 />
                             </v-container>
@@ -36,37 +41,35 @@
                             <v-spacer />
                             <v-btn
                                 type="submit"
-                                color="blue"
-                                class="hover:bg-blue-700"
+                                color="primary"
+                                
                             >
-                                Save Changes
+                                update
                             </v-btn>
                         </v-card-actions>
+                        <!-- <v-progress-circular
+                            v-if="loading"
+                            indeterminate
+                            color="blue"
+                            class="flex justify-center items-center mt-4"
+                            style="
+                                position: absolute;
+                                top: 50%;
+                                left: 50%;
+                                transform: translate(-50%, -50%);
+                                z-index: 1000;
+                            "
+                        ></v-progress-circular> -->
                     </v-form>
                 </v-card>
 
                 <!-- Loading Indicator -->
-                <v-progress-circular
-                    v-if="loading"
-                    indeterminate
-                    color="blue"
-                    class="flex justify-center items-center mt-4"
-                    style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 1000;"
-                ></v-progress-circular>
 
                 <!-- Alert message -->
-                <v-snackbar
-                    v-model="showAlert"
-                    :timeout="3000"
-                    color="green"
-                >
+                <v-snackbar v-model="showAlert" :timeout="3000" color="green">
                     {{ successMessage }}
                     <template v-slot:action="{ attrs }">
-                        <v-btn
-                            icon
-                            v-bind="attrs"
-                            @click="showAlert = false"
-                        >
+                        <v-btn icon v-bind="attrs" @click="showAlert = false">
                             <v-icon>mdi-close</v-icon>
                         </v-btn>
                     </template>
@@ -100,43 +103,34 @@ export default {
         async saveRole() {
             this.loading = true;
             this.userId = this.$route.params.id;
-            await api
-                .put(`/api/role/${this.userId}`, this.editData)
-                .then((res) => {
-                    this.successMessage = res.data.original.message ||  "Role updated successfully";;
-                    this.showAlert = true;
-                    setTimeout(() => {
-                        this.showAlert = false;
-                    }, 3000);
-
-
-                })
-                .catch((error) => {
-                    console.error("Error saving role:", error);
-                })
-                .finally(() => {
-                    this.loading = false;
-                });
-
+            try {
+                const res = await api.put(`/api/role/${this.userId}`, this.editData);
+                this.successMessage = res.data.original.message || "Role updated successfully";
+                this.showAlert = true;
+                setTimeout(() => {
+                    this.showAlert = false;
+                }, 3000);
                 this.$store.dispatch("adminAuthProfile");
+            } catch (error) {
+                console.error("Error saving role:", error);
+            } finally {
+                this.loading = false;
+            }
         },
         async fetchData() {
             this.loading = true;
             this.userId = this.$route.params.id;
-            await api.get(`/api/role/${this.userId}/edit`).then((res) => {
-                this.editData.name = res.data.name;
-                this.editData.permissions = res.data.selected_permission_list;
-                this.loading = false;
-            })
-            .catch((error) => {
+            try {
+                const roleResponse = await api.get(`/api/role/${this.userId}/edit`);
+                this.editData.name = roleResponse.data.name;
+                this.editData.permissions = roleResponse.data.selected_permission_list;
+                const permissionsResponse = await api.get("/api/permission");
+                this.permissions = permissionsResponse.data;
+            } catch (error) {
                 console.error("Error fetching data:", error);
-            })
-            .finally(() => {
+            } finally {
                 this.loading = false;
-                })
-            await api.get("/api/permission").then((res) => {
-                this.permissions = res.data;
-            });
+            }
         },
     },
     mounted() {
@@ -144,3 +138,9 @@ export default {
     },
 };
 </script>
+
+<style scoped>
+.sidebar {
+  width: 250px;
+}
+</style>

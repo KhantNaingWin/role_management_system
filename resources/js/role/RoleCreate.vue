@@ -39,12 +39,16 @@
                     </v-col>
                   </v-row>
                   <v-row>
+                    <v-col cols="12" class="text-center" v-if="loadingPermissions">
+                      <v-progress-circular indeterminate color="primary"></v-progress-circular>
+                    </v-col>
                     <v-col
                       v-for="permission in Permissions"
                       :key="permission.id"
                       cols="12"
                       sm="6"
                       md="4"
+                      v-else
                     >
                       <v-checkbox
                         v-model="role.permissions"
@@ -88,6 +92,7 @@ export default {
       },
       Permissions: [],
       loading: false,
+      loadingPermissions: false,
       successMessage: "",
     };
   },
@@ -120,11 +125,14 @@ export default {
       }
     },
     async fetchData() {
+      this.loadingPermissions = true;
       try {
         const response = await api.get("/api/permission");
         this.Permissions = response.data;
       } catch (error) {
         console.log(error);
+      } finally {
+        this.loadingPermissions = false;
       }
     },
   },

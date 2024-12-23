@@ -103,7 +103,10 @@ export default createStore({
             }
         },
         deleteRole(state, roleId) {
-            state.roles = state.roles.filter((role) => role.id !== roleId); // Remove role from the list
+            // console.log(state.roles.roles.data,roleId);
+            console.log("Delete Role", roleId);
+
+            state.roles.roles.data = state.roles.roles.data.filter((role) => role.id !== roleId);
         },
         //user post list
         postlists(state, postlists) {
