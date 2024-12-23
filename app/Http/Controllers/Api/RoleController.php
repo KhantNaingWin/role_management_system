@@ -16,7 +16,11 @@ class RoleController extends Controller
     public function index(Request $request)
     {
         $roles = $this->roleInterface->all($request);
-        return response()->json($roles);
+        $permissions = $roles->pluck('permissions');
+        return response()->json([
+            'roles' => $roles,
+            'permissions' => $permissions,
+        ]);
     }
 
     /**

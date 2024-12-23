@@ -1,6 +1,6 @@
 <template>
     <div class="flex justify-center items-center min-h-screen bg-white px-6">
-      <v-card class="p-8 max-w-sm w-full shadow-lg rounded-lg transition duration-300 hover:shadow-xl">
+      <div class="p-8 max-w-sm w-full shadow-lg rounded-lg transition duration-300 hover:shadow-xl">
         <v-alert
           v-if="errorStatus"
           type="error"
@@ -37,17 +37,17 @@
             class="mt-6"
             :disabled="loading"
           >
-          <span v-if="loading">Loading...</span>
-          <span v-else>Sign in</span>
-          </v-btn>
-        </v-form>
-        <v-progress-circular
+          <v-progress-circular
         v-if="loading"
         indeterminate
         color="indigo"
-        class="mt-4"
+        class="mx-auto"
       ></v-progress-circular>
-      </v-card>
+          <span v-else>Sign in</span>
+          </v-btn>
+        </v-form>
+
+      </div>
     </div>
   </template>
 

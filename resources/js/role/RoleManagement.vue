@@ -1,84 +1,16 @@
-<!-- <template>
-  <v-app>
-    <div class="flex h-screen ">
-      <Sidebar class="h-screen" />
-
-      <v-container fluid class="pa-6 h-screen">
-        <v-row>
-          <v-col cols="12" md="8">
-            <v-data-table
-              :headers="headers"
-              :items="roles"
-              :items-length="totalItems"
-              :loading="loading"
-              @update:options="fetchRoles"
-            >
-              <template v-slot:top>
-                <v-toolbar flat>
-                  <v-toolbar-title>Role List</v-toolbar-title>
-                  <v-spacer></v-spacer>
-                  <v-btn @click="addRole" color="primary">
-                    <v-icon left>mdi-plus</v-icon>Add Role
-                  </v-btn>
-                </v-toolbar>
-              </template>
-
-              <template v-slot:item="{ item }">
-                <tr>
-                  <td>{{ item.name }}</td>
-                  <td class="space-x-4">
-                    <v-btn @click="editRole(item.id)" >
-                      <v-icon left>mdi-pencil</v-icon>
-                    </v-btn>
-                    <v-btn @click="deleteRole(item.id)">
-                      <v-icon left>mdi-delete</v-icon>
-                    </v-btn>
-                  </td>
-                </tr>
-              </template>
-            </v-data-table>
-          </v-col>
-        </v-row>
-      </v-container>
-    </div>
-  </v-app>
-</template> -->
 <template>
-    <div
-        x-data="{ sidebarOpen: false }"
-        class="flex h-screen bg-gray-100 font-roboto"
-    >
+    <div x-data="{ sidebarOpen: false }" class="flex h-screen bg-gray-100 font-roboto">
         <Sidebar />
         <div class="flex-1 flex flex-col overflow-hidden">
             <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-50">
                 <div class="container mx-auto px-6 py-8">
                     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                        <div
-                            class="bg-white p-6 rounded-lg shadow-lg col-span-1 lg:col-span-3"
-                        >
-                            <v-progress-circular
-                                v-if="loading"
-                                indeterminate
-                                color="primary"
-                                class="mx-auto"
-                            ></v-progress-circular>
-                            <div
-                                v-else-if="totalItems === 0"
-                                class="text-center py-4"
-                            >
-                                <p>No data available.</p>
-                            </div>
-                            <v-data-table
-                                :headers="headers"
-                                :items="roles"
-                                :loading="loading"
-                                @update:options="fetchRoles"
-                            >
+                        <div class="bg-white p-6 shadow-lg col-span-1 lg:col-span-3">
+                            <v-data-table :headers="headers" :items="roles" :loading="loading"
+                                @update:options="fetchRoles">
                                 <template v-slot:top>
                                     <v-toolbar flat>
-                                        <v-toolbar-title
-                                            >Role List</v-toolbar-title
-                                        >
+                                        <v-toolbar-title>Role List</v-toolbar-title>
                                         <v-spacer></v-spacer>
                                         <v-btn @click="addRole" color="primary">
                                             <v-icon left>mdi-plus</v-icon>Add
@@ -90,12 +22,19 @@
                                 <template v-slot:item="{ item }">
                                     <tr>
                                         <td>{{ item.name }}</td>
+                                        <td>
+                                            <v-chip-group column>
+                                                <v-chip v-for="permission in item.permissions" :key="permission.id" class="ma-1" color="primary" text-color="white">
+                                                    {{ permission.name }}
+                                                </v-chip>
+                                            </v-chip-group>
+                                        </td>
                                         <td class="space-x-4">
                                             <v-btn @click="editRole(item.id)">
-                                                <v-icon left>mdi-pencil</v-icon>
+                                                <v-icon class="text-green" left>mdi-pencil</v-icon>
                                             </v-btn>
                                             <v-btn @click="deleteRole(item.id)">
-                                                <v-icon left>mdi-delete</v-icon>
+                                                <v-icon class="text-red" left>mdi-delete</v-icon>
                                             </v-btn>
                                         </td>
                                     </tr>
@@ -120,14 +59,15 @@ export default {
     data() {
         return {
             roles: [],
-            options : {
+            options: {
                 page: 1,
                 itemsPerPage: 10,
             },
             loading: false,
             headers: [
-                { title: "Role Name", value: "name" },
-                { title: "Actions", value: "actions", sortable: false },
+                { text: "Role Name", value: "name" },
+                { text: "Permissions", value: "permissions", sortable: false },
+                { text: "Actions", value: "actions", sortable: false },
             ],
         };
     },
@@ -136,16 +76,16 @@ export default {
     },
     watch: {
         storeRoles(newValue) {
-            this.roles = newValue?.data;
-            // this.totalItems = newValue?.total;
-            // console.log(this.totalItems);
-
-                    },
+            this.roles = newValue.roles?.data.map(role => ({
+                ...role,
+                permissions: role.permissions || [],
+            }));
+        },
     },
     methods: {
         async fetchRoles(options) {
             this.loading = true;
-            const response = await this.$store.dispatch("fetchRoles",options);
+            const response = await this.$store.dispatch("fetchRoles", options);
             this.loading = false;
         },
         addRole() {

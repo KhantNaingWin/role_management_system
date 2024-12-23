@@ -91,8 +91,8 @@ export default createStore({
             state.roles = getRoles;
         },
         newRoles(state, newRole) {
+           state.roles = newRole;
 
-            state.roles?.data.push(newRole);
         },
         updateRole(state, updatedRole) {
             const index = state.roles.findIndex(
@@ -216,9 +216,7 @@ export default createStore({
             commit("deletePost", postId); // Remove post from the store
         },
         async fetchRoles({ commit }, role) {
-            console.log(role);
-
-            const response = await api.get(`api/role?page=${role.page}&per_page=${role.itemsPerPage}`, {
+           const response = await api.get(`api/role?page=${role.page}&per_page=${role.itemsPerPage}`, {
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`
                 }

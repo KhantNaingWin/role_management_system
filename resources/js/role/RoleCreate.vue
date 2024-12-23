@@ -6,7 +6,7 @@
 
       <!-- Main Content -->
       <v-container fluid class="pa-6 flex-grow-1">
-        <v-row>
+        <v-row justify="center">
           <v-col cols="12" md="8">
             <!-- Loading and Success Messages -->
             <v-alert v-if="loading" type="info" dismissible>
@@ -22,14 +22,14 @@
             </v-alert>
 
             <!-- Form Section -->
-            <v-card class="mt-8 ms-40">
+            <v-card class="mt-8">
               <v-card-title>
                 <span class="text-h5">Create New Role</span>
               </v-card-title>
               <v-card-text>
                 <v-form @submit.prevent="newRole">
                   <v-row class="mb-4">
-                    <v-col>
+                    <v-col cols="12">
                       <v-text-field
                         v-model="role.name"
                         label="Enter role name"
@@ -37,18 +37,14 @@
                         required
                       />
                     </v-col>
-                    <v-col class="d-flex align-center">
-                      <v-btn type="submit" color="blue" class="w-25">
-                        Create
-                      </v-btn>
-                    </v-col>
                   </v-row>
                   <v-row>
                     <v-col
                       v-for="permission in Permissions"
                       :key="permission.id"
-                      cols="3"
-                      sm="4"
+                      cols="12"
+                      sm="6"
+                      md="4"
                     >
                       <v-checkbox
                         v-model="role.permissions"
@@ -56,6 +52,13 @@
                         :value="permission.name"
                         :id="String(permission.id)"
                       />
+                    </v-col>
+                  </v-row>
+                  <v-row>
+                    <v-col class="d-flex justify-center">
+                      <v-btn type="submit" color="primary" class="mt-4">
+                        Create
+                      </v-btn>
                     </v-col>
                   </v-row>
                 </v-form>
@@ -69,7 +72,7 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex/dist/vuex.cjs.js";
+import { mapGetters } from "vuex";
 import Sidebar from "../admin/Sidebar.vue";
 import api from "../api/api";
 

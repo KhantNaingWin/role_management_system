@@ -1,119 +1,100 @@
 <template>
-    <div class="flex justify-center items-center min-h-screen bg-white px-6">
-        <div
-            class="p-8 max-w-sm w-full bg-white shadow-lg rounded-lg transform transition duration-300 hover:shadow-xl"
-        >
-            <h2 class="text-2xl font-semibold text-center mb-6 text-gray-800">
-                Register
-            </h2>
+  <v-container class="d-flex justify-center align-center min-height-100vh">
+    <v-card class="pa-8 max-width-400">
+      <v-card-title class="text-center">
+        <span class="headline">Register</span>
+      </v-card-title>
 
-            <form @submit.prevent="submitForm">
-                <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-700"
-                        >Name</label
-                    >
-                    <input
-                        type="text"
-                        v-model="formData.name"
-                        class="mt-2 w-full p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:border-indigo-600 focus:ring-1 focus:ring-indigo-600 transition duration-200"
-                    />
-                    <small v-if="errorMessage" class="text-red-600">{{
-                        errorMessage
-                    }}</small>
-                </div>
+      <v-form @submit.prevent="submitForm">
+        <v-text-field
+          v-model="formData.name"
+          label="Name"
+          :error-messages="errorMessage ? [errorMessage] : []"
+          outlined
+          dense
+          class="mb-4"
+        ></v-text-field>
 
-                <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-700"
-                        >Email</label
-                    >
-                    <input
-                        type="email"
-                        v-model="formData.email"
-                        class="mt-2 w-full p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:border-indigo-600 focus:ring-1 focus:ring-indigo-600 transition duration-200"
-                    />
-                    <small v-if="errorMessage" class="text-red-600">{{
-                        errorMessage
-                    }}</small>
-                </div>
+        <v-text-field
+          v-model="formData.email"
+          label="Email"
+          :error-messages="errorMessage ? [errorMessage] : []"
+          outlined
+          dense
+          class="mb-4"
+        ></v-text-field>
 
-                <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-700"
-                        >Password</label
-                    >
-                    <input
-                        type="password"
-                        v-model="formData.password"
-                        class="mt-2 w-full p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:border-indigo-600 focus:ring-1 focus:ring-indigo-600 transition duration-200"
-                    />
-                </div>
+        <v-text-field
+          v-model="formData.password"
+          label="Password"
+          type="password"
+          outlined
+          dense
+          class="mb-4"
+        ></v-text-field>
 
-                <div class="mt-6">
-                    <button
-                        type="submit"
-                        class="w-full py-2.5 bg-indigo-600 text-white rounded-lg hover:bg-indigo-500 transition duration-200 transform hover:scale-105"
-                    >
-                        Register
-                    </button>
-                </div>
+        <v-btn type="submit" color="primary" block class="mt-6">
+          Register
+        </v-btn>
 
-                <div class="mt-4 text-center">
-                    <router-link
-                        to="/login"
-                        class="text-sm text-indigo-600 hover:underline"
-                    >
-                        Already have an account? Log in
-                    </router-link>
-                </div>
-            </form>
-        </div>
-    </div>
+        <v-btn text block class="mt-4" @click="$router.push('/login')">
+          Already have an account? Log in
+        </v-btn>
+      </v-form>
+    </v-card>
+  </v-container>
 </template>
 
 <script>
 import api from "../api/api";
 import { mapGetters } from "vuex";
 export default {
-    data() {
-        return {
-            formData: {
-                name: "",
-                email: "",
-            },
-            errorMessage: null, // To store error messages
-        };
-    },
-    computed: {
-        // ...mapGetters(["storeUserData"]),
-    },
-    methods: {
-        async submitForm() {
-            // console.log(this.formData);
+  data() {
+    return {
+      formData: {
+        name: "",
+        email: "",
+        password: "",
+      },
+      errorMessage: null, // To store error messages
+    };
+  },
+  computed: {
+    // ...mapGetters(["storeUserData"]),
+  },
+  methods: {
+    async submitForm() {
+      try {
+        const response = await api.post("api/register", this.formData);
+        const token = response.data.token;
+        const userData = response.data.user;
 
-            try {
-                const response = await api.post("api/register", this.formData);
-                const token = response.data.token;
-                const userData = response.data.user;
+        localStorage.setItem("token", token);
 
-                localStorage.setItem("token", token);
+        this.$router.push("/user/home");
 
-                this.$router.push("/user/home");
-
-                this.formData = {}; // Reset form data
-            } catch (error) {
-                if (error) {
-                    // Laravel validation error
-                    this.errorMessage = error.response.data.message;
-                } else {
-                    this.errorMessage =
-                        "Something went wrong. Please try again.";
-                }
-            }
-        },
+        this.formData = {}; // Reset form data
+      } catch (error) {
+        if (error) {
+          // Laravel validation error
+          this.errorMessage = error.response.data.message;
+        } else {
+          this.errorMessage = "Something went wrong. Please try again.";
+        }
+      }
     },
-    mounted() {
-        this.formData = {};
-    },
+  },
+  mounted() {
+    this.formData = {};
+  },
 };
 </script>
 
-<style lang="scss" scoped></style>
+<style scoped>
+.min-height-100vh {
+  min-height: 100vh;
+}
+.max-width-400 {
+  max-width: 400px;
+}
+</style>
