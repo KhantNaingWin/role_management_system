@@ -1,13 +1,13 @@
 <template>
     <div
         x-cloak
-        class="fixed inset-y-0 left-0 z-30 w-64 overflow-y-auto transition-transform duration-300 transform bg-gradient-to-b from-gray-900 to-gray-800 lg:translate-x-0 lg:static lg:inset-0 shadow-lg"
+        class="fixed inset-y-0 h-screen left-0 z-30 w-64 overflow-y-auto transition-transform duration-300 transform bg-gradient-to-b bg-slate-300 lg:translate-x-0 lg:static lg:inset-0 shadow-lg"
     >
         <div class="flex items-center justify-center mt-8">
             <div class="flex items-center">
                 <button
                     @click="Profile"
-                    class="ml-2 text-2xl font-semibold text-white"
+                    class="ml-2 text-2xl font-semibold"
                 >
                     <i class="fa fa-user"></i>
                 </button>
@@ -18,7 +18,7 @@
             <a
              v-if="permissions?.includes('read')"
                 @click="userList"
-                class="flex items-center px-6 py-3 mt-4 text-gray-300 transition-colors duration-200 transform hover:bg-blue-600 hover:text-white rounded-lg"
+                class="flex items-center px-6 py-3 mt-4  transition-colors duration-200 transform hover:bg-slate-500 hover:text-white rounded-lg"
             >
                 <i class="fa-solid fa-users text-blue-400"></i>
                 <span class="ml-3">Users</span>
@@ -27,7 +27,7 @@
             <a
                 v-if="permissions?.includes('post_read')"
                 @click="postPage"
-                class="flex items-center px-6 py-3 mt-4 text-gray-300 transition-colors duration-200 transform hover:bg-green-600 hover:text-white rounded-lg"
+                class="flex items-center px-6 py-3 mt-4  transition-colors duration-200 transform hover:bg-slate-500 hover:text-white rounded-lg"
             >
                 <i class="fa-solid fa-newspaper text-green-400"></i>
                 <span class="ml-3">Post</span>
@@ -36,7 +36,7 @@
             <a
                 v-if="currentRole ? currentRole[0]?.name === 'admin' : ''"
                 @click="rolePage"
-                class="flex items-center px-6 py-3 mt-4 text-gray-300 transition-colors duration-200 transform hover:bg-purple-600 hover:text-white rounded-lg"
+                class="flex items-center px-6 py-3 mt-4  transition-colors duration-200 transform hover:bg-slate-500 hover:text-white rounded-lg"
             >
                 <i class="fa-solid fa-shield-halved text-purple-400"></i>
                 <span class="ml-3">Roles</span>
@@ -44,7 +44,7 @@
 
             <button
                 @click="logoutData"
-                class="flex w-52 items-center py-2 mt-8 mx-auto bg-red-600 text-white rounded-lg transition duration-200 transform hover:bg-red-700 shadow-lg"
+                class="flex w-52 items-center py-2 mt-8 mx-auto bg-red-600 rounded-lg transition duration-200 transform hover:bg-red-700 shadow-lg"
             >
                 <div class="flex mx-auto">
                     <i class="fa-solid my-auto fa-right-from-bracket"></i>

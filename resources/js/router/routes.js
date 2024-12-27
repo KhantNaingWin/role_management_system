@@ -3,7 +3,6 @@ import Login from "../pages/Login.vue";
 import Home from "../user/Home.vue";
 import AdminHome from "../admin/Home.vue";
 import api from "../api/api";
-import Mainlayout from "../Mainlayout.vue";
 import RoleManagement from "../role/RoleManagement.vue";
 import Edit from "../admin/Edit.vue";
 import Create from "../admin/Create.vue";
@@ -11,7 +10,6 @@ import Profile from "../components/Profile.vue";
 import EditRole from "../role/EditRole.vue";
 
 export const routes = [
-    { path: '/', name: 'main', component: Mainlayout },
     {
         path: '/register', name: 'register', component: Register, beforeEnter: (to, from, next) => {
             switch (!localStorage.getItem('token')) {
@@ -131,6 +129,10 @@ export const routes = [
         beforeEnter: async (to, from) => {
             await roleBasedAuth('user');
         }
+    },
+    {
+        path: '/',
+        redirect: '/user/home'
     },
 ];
 

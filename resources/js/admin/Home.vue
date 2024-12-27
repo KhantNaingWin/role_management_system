@@ -1,4 +1,4 @@
-<template>
+<!-- <template>
     <div
         class="flex h-screen bg-gradient-to-br from-gray-100 to-gray-300 font-roboto"
     >
@@ -46,63 +46,24 @@
                                 <div
                                     class="inline-block min-w-full shadow-lg rounded-lg overflow-hidden"
                                 >
-                                    <!-- <v-table
-                                        v-if="permissions?.includes('read')"
-                                    >
-                                        <thead>
-                                            <tr>
-                                                <th class="indigo-lighten-4">
-                                                    Name
-                                                </th>
-                                                <th class="indigo-lighten-4">
-                                                    Email
-                                                </th>
-                                                <th class="indigo-lighten-4">
-                                                    Role
-                                                </th>
-                                                <th
-                                                    class="indigo-lighten-4"
-                                                ></th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr
-                                                v-for="userlist in userlists"
-                                                :key="userlist.id"
-                                                class="odd:bg-white even:bg-gray-50 hover:bg-gray-100 transition-colors"
-                                            >
-                                                <td
-                                                    class="px-5 py-5 border-b border-gray-300 bg-white text-sm"
+                                    <div>
+                                        <v-data-table-server
+                                            :items="userlists?.data"
+                                            :headers="headers"
+                                            :items-length="totalItems"
+                                            :loading="loading"
+                                            @update:options="fetchData"
+                                        >
+                                            <template v-slot:body="{ items }">
+                                                <tr
+                                                    v-for="userlist in items"
+                                                    :key="userlist.id"
                                                 >
-                                                    <div
-                                                        class="flex items-center"
-                                                    >
-                                                        <div class="ml-3">
-                                                            <p
-                                                                class="text-gray-900 whitespace-no-wrap"
-                                                            >
-                                                                {{
-                                                                    userlist.name
-                                                                }}
-                                                            </p>
-                                                        </div>
-                                                    </div>
-                                                </td>
-                                                <td
-                                                    class="px-5 py-5 border-b border-gray-300 bg-white text-sm"
-                                                >
-                                                    <p
-                                                        class="text-gray-900 whitespace-no-wrap"
-                                                    >
+                                                    <td>{{ userlist.name }}</td>
+                                                    <td>
                                                         {{ userlist.email }}
-                                                    </p>
-                                                </td>
-                                                <td
-                                                    class="px-5 py-5 border-b border-gray-300 bg-white text-sm"
-                                                >
-                                                    <p
-                                                        class="text-gray-900 whitespace-no-wrap"
-                                                    >
+                                                    </td>
+                                                    <td>
                                                         {{
                                                             userlist.roles &&
                                                             userlist.roles
@@ -112,109 +73,249 @@
                                                                       .name
                                                                 : "No role assigned"
                                                         }}
-                                                    </p>
-                                                </td>
-                                                <td
-                                                    class="px-5 space-x-4 py-5 border-b border-gray-300 bg-white text-sm"
-                                                >
-                                                    <button
-                                                        v-if="
-                                                            permissions?.includes(
-                                                                'update'
-                                                            )
-                                                        "
-                                                        @click="
-                                                            userEdit(
-                                                                userlist.id
-                                                            )
-                                                        "
-                                                        class="text-gray-500 hover:text-lime-500 transition-colors"
-                                                    >
-                                                        <i
-                                                            class="fa-regular fa-pen-to-square"
-                                                        ></i>
-                                                    </button>
-                                                    <button
-                                                        v-if="
-                                                            permissions?.includes(
-                                                                'delete'
-                                                            )
-                                                        "
-                                                        @click="
-                                                            userDelete(
-                                                                userlist.id
-                                                            )
-                                                        "
-                                                        class="text-gray-500 hover:text-red-500 transition-colors"
-                                                    >
-                                                        <i
-                                                            class="fa-solid fa-trash"
-                                                        ></i>
-                                                    </button>
-                                                    <button
-                                                        v-if="
-                                                            currentRole
-                                                                ? currentRole[0]
-                                                                      ?.name ===
-                                                                  'admin'
-                                                                : ''
-                                                        "
-                                                        @click="
-                                                            showRoleSelect(
-                                                                userlist.id
-                                                            )
-                                                        "
-                                                        class="text-gray-500 hover:text-blue-700 transition-colors"
-                                                    >
-                                                        <i
-                                                            class="fas fa-user-edit"
-                                                        ></i>
-                                                    </button>
-                                                    <div
-                                                        v-if="
-                                                            userlist.id ===
-                                                            editingRoleId
-                                                        "
-                                                        class="inline-block relative"
-                                                    >
-                                                        <select
+                                                    </td>
+                                                    <td class="text-center">
+                                                        <v-btn
+                                                        elevation="0"
+                                                            icon
                                                             v-if="
-                                                                currentRole
-                                                                    ? currentRole[0]
-                                                                          ?.name ===
-                                                                      'admin'
-                                                                    : ''
-                                                            "
-                                                            v-model="
-                                                                selectedRole
-                                                            "
-                                                            @change="
-                                                                changeUserRole(
-                                                                    userlist.id,
-                                                                    selectedRole
+                                                                permissions?.includes(
+                                                                    'update'
                                                                 )
                                                             "
-                                                            class="block w-full bg-white border border-gray-300 text-gray-700 py-2 px-3 pr-8 rounded leading-tight focus:outline-none focus:border-blue-500"
+                                                            @click="
+                                                                userEdit(
+                                                                    userlist.id
+                                                                )
+                                                            "
                                                         >
-                                                            <option
-                                                                disabled
-                                                                value=""
+                                                            <v-icon
+                                                            elevation="0"
+                                                                small
+                                                                class="text-green"
+                                                                >mdi-pencil</v-icon
                                                             >
-                                                                Select Role
-                                                            </option>
-                                                            <option
-                                                                v-for="role in roles"
-                                                                :key="role.id"
-                                                                :value="role.id"
+                                                        </v-btn>
+                                                        <v-btn
+                                                        elevation="0"
+                                                            icon
+                                                            v-if="
+                                                                permissions?.includes(
+                                                                    'delete'
+                                                                )
+                                                            "
+                                                            @click="
+                                                                userDelete(
+                                                                    userlist.id
+                                                                )
+                                                            "
+                                                        >
+                                                            <v-icon
+                                                                small
+                                                                class="text-red"
+                                                                >mdi-delete</v-icon
                                                             >
-                                                                {{ role.name }}
-                                                            </option>
-                                                        </select>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        </tbody>
-                                    </v-table> -->
+                                                        </v-btn>
+                                                        <v-btn
+                                                            elevation="0"
+                                                            icon
+                                                            v-if="
+                                                                currentRole?.[0]
+                                                                    ?.name ===
+                                                                'admin'
+                                                            "
+                                                            @click="
+                                                                showRoleSelect(
+                                                                    userlist.id
+                                                                )
+                                                            "
+                                                        >
+                                                            <v-icon
+                                                                small
+                                                                >mdi-account-edit</v-icon
+                                                            >
+                                                        </v-btn>
+                                                        <div
+                                                            v-if="
+                                                                userlist.id ===
+                                                                editingRoleId
+                                                            "
+                                                            class="inline-block relative"
+                                                        >
+                                                            <v-select
+                                                                v-if="
+                                                                    currentRole?.[0]
+                                                                        ?.name ===
+                                                                    'admin'
+                                                                "
+                                                                v-model="
+                                                                    selectedRole
+                                                                "
+                                                                :items="roles"
+                                                                item-title="name"
+                                                                item-value="id"
+                                                                label="Select Role"
+                                                                 @update:modelValue="value => changeUserRole(value, userlist.id)"
+                                                                dense
+                                                                variant="outlined"
+                                                            ></v-select>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            </template>
+                                        </v-data-table-server>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+</template> -->
+<template>
+    <div
+        x-data="{ sidebarOpen: false }"
+        class="flex h-screen bg-gray-100 font-roboto"
+    >
+        <Sidebar />
+        <div class="flex-1 flex flex-col overflow-hidden">
+            <!-- <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-50">
+                <div class="container mx-auto px-6 py-8">
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <div
+                            class="bg-white p-6 shadow-lg col-span-1 lg:col-span-3"
+                        >
+                                <v-toolbar flat>
+                                    <v-toolbar-title
+                                        >Post Lists</v-toolbar-title
+                                    >
+                                    <v-spacer></v-spacer>
+                                    <v-btn color="primary" @click="postcreate">
+                                        <v-icon left>mdi-plus</v-icon>Create
+                                        Post
+                                    </v-btn>
+                                </v-toolbar>
+                                <v-text-field
+                                    v-model="search"
+                                    label="Search"
+                                    clearable
+                                    @input="
+                                        fetchData({
+                                            page: 1,
+                                            itemsPerPage: itemsPerPage,
+                                            search,
+                                        })
+                                    "
+                                    @click:clear="handleClear"
+                                    class="my-3"
+                                ></v-text-field>
+                                <v-progress-circular
+                                    v-if="loading"
+                                    indeterminate
+                                    color="primary"
+                                    class="mx-auto"
+                                ></v-progress-circular>
+                                <div
+                                    v-else-if="totalItems === 0"
+                                    class="text-center py-4"
+                                >
+                                    <p>No data available.</p>
+                                </div>
+                                <v-data-table-server
+                                    v-else
+                                    :headers="headers"
+                                    :items="items?.data"
+                                    :items-length="totalItems"
+                                    :loading="loading"
+                                    @update:options="fetchData"
+                                    class="elevation-1"
+                                >
+                                    <template v-slot:item="{ item }">
+                                        <tr>
+                                            <td>{{ item.title }}</td>
+                                            <td>{{ item.description }}</td>
+                                            <td class="text-center">
+                                                <v-btn
+                                                    elevation="0"
+                                                    v-if="
+                                                        authPermission?.includes(
+                                                            'update_post'
+                                                        )
+                                                    "
+                                                    icon
+                                                    @click="editItem(item)"
+                                                >
+                                                    <v-icon
+                                                        small
+                                                        class="text-green"
+                                                        >mdi-pencil</v-icon
+                                                    >
+                                                </v-btn>
+                                                <v-btn
+                                                    elevation="0"
+                                                    icon
+                                                    v-if="
+                                                        authPermission?.includes(
+                                                            'delete_post'
+                                                        )
+                                                    "
+                                                    @click="deleteItem(item.id)"
+                                                >
+                                                    <v-icon
+                                                        small
+                                                        class="text-red"
+                                                        >mdi-delete</v-icon
+                                                    >
+                                                </v-btn>
+                                            </td>
+                                        </tr>
+                                    </template>
+                                </v-data-table-server>
+                        </div>
+                    </div>
+                </div>
+            </main> -->
+            <main
+                class="flex-1 overflow-x-hidden overflow-y-auto bg-transparent"
+            >
+                <div class="container mx-auto px-6 py-8">
+                    <div class="mt-8">
+                        <div v-if="successMessage" class="mt-4">
+                            <div
+                                class="flex p-4 mb-4 text-sm text-green-800 border border-green-300 rounded-lg bg-green-50 shadow-md"
+                                role="alert"
+                            >
+                                <svg
+                                    class="w-5 h-5 inline-flex mr-3"
+                                    fill="currentColor"
+                                    viewBox="0 0 20 20"
+                                >
+                                    <path
+                                        d="M8.257 3.099c.366-1.099 1.942-1.099 2.308 0l5.196 15.5c.366 1.099-1.072 2-2.308 1.375L10 16.202l-3.453 3.772C5.122 20.5 3.636 19.601 4 18.5l5.196-15.5z"
+                                    />
+                                </svg>
+                                <div>{{ successMessage }}</div>
+                            </div>
+                        </div>
+                        <div class="mt-6">
+                            <div>
+                                <v-btn
+                                    @click="createData"
+                                    v-if="permissions?.includes('create')"
+                                    class="bg-blue"
+                                >
+                                    Add
+                                </v-btn>
+                            </div>
+
+                            <div
+                                class="-mx-4 sm:-mx-8 px-4 sm:px-8 py-4 overflow-x-auto"
+                            >
+                                <div
+                                    class="inline-block min-w-full shadow-lg rounded-lg overflow-hidden"
+                                >
                                     <div>
                                         <v-data-table-server
                                             :items="userlists?.data"

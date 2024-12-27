@@ -16,7 +16,7 @@
                 data-dropdown-placement="bottom"
               >
                 <span class="sr-only">Open user menu</span>
-                <img class="w-8 h-8 rounded-full" :src="userPhoto" alt="User photo" />
+                <img class="w-8 h-8 rounded-full" src="../css/image.jpg" alt="User photo" />
               </button>
               <div
                 class="z-50 hidden my-4 text-base list-none bg-white divide-y divide-gray-100 rounded-lg shadow dark:bg-gray-700 dark:divide-gray-600"
@@ -71,7 +71,6 @@ import api from './api/api';
     data() {
       return {
         isLoggedIn: true,
-        userPhoto: '../css/images.jpg',
         userName: 'John Doe',
         userEmail: 'john.doe@example.com'
       };

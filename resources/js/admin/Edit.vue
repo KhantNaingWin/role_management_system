@@ -8,7 +8,7 @@
         x-cloak
         class="fixed inset-0 z-20 transition-opacity bg-black opacity-50 lg:hidden"
       ></div>
-      <Sidebar />
+      <Sidebar/>
       <div class="flex-1 flex flex-col overflow-hidden">
         <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-200">
           <div class="container mx-auto px-6 py-8">
@@ -101,7 +101,9 @@ export default {
   },
   watch: {
     storeEditUser(newValue) {
-      this.formData = newValue[0];
+      if (newValue && newValue.length > 0) {
+        this.formData = newValue[0];
+      }
     },
     updateSuccess(newValue) {
       if (newValue) {
@@ -117,7 +119,6 @@ export default {
       }
     },
   },
-
   methods: {
     async UpdateUser() {
       this.loading = true;
@@ -125,22 +126,20 @@ export default {
       this.loading = false;
     },
     async fetchData(userId) {
+      this.loading = true;
       try {
-        this.$store.dispatch("fetchEditUser", userId);
+        await this.$store.dispatch("fetchEditUser", userId);
       } catch (error) {
         console.error("Error fetching data:", error);
       } finally {
         this.loading = false;
       }
-
-      //
     },
   },
-
-  mounted() {
+  async mounted() {
     if (this.$route.params.id) {
       this.userId = this.$route.params.id;
-      this.fetchData(this.userId);
+      await this.fetchData(this.userId);
     } else {
       console.error("No ID found in the route parameters");
     }
